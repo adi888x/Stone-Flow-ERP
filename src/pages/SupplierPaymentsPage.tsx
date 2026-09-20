@@ -1,0 +1,1 @@
+export { SupplierPaymentsPage } from './PaymentsPages';
