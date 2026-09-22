@@ -112,49 +112,72 @@ export function Dashboard({ setCurrentPage }: DashboardProps) {
           <h1 className="text-xl font-bold text-slate-800">Dashboard</h1>
           <p className="text-sm text-slate-500">Overview of business operations</p>
         </div>
-        <div className="flex items-center gap-3">
-          {/* Quick Action Buttons */}
-          <div className="flex gap-2">
+        <div className="flex gap-2">
+          {(['today', 'week', 'month'] as const).map(r => (
             <button
-              onClick={() => {
-                sessionStorage.setItem('openSaleForm', 'true');
-                setCurrentPage('sales');
-              }}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors shadow-sm"
-              title="Create new sale"
+              key={r}
+              onClick={() => setDateRange(r)}
+              className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-colors ${
+                dateRange === r ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+              }`}
             >
-              <Plus size={16} />
-              <span className="hidden sm:inline">New Sale</span>
+              {r === 'today' ? 'Today' : r === 'week' ? 'This Week' : 'This Month'}
             </button>
-            
-            <button
-              onClick={() => {
-                sessionStorage.setItem('openPurchaseForm', 'true');
-                setCurrentPage('purchases');
-              }}
-              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium transition-colors shadow-sm"
-              title="Create new purchase"
-            >
-              <Plus size={16} />
-              <span className="hidden sm:inline">New Purchase</span>
-            </button>
-          </div>
-
-          {/* Date Range Selector */}
-          <div className="flex gap-2">
-            {(['today', 'week', 'month'] as const).map(r => (
-              <button
-                key={r}
-                onClick={() => setDateRange(r)}
-                className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-colors ${
-                  dateRange === r ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
-                }`}
-              >
-                {r === 'today' ? 'Today' : r === 'week' ? 'This Week' : 'This Month'}
-              </button>
-            ))}
-          </div>
+          ))}
         </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <button
+          onClick={() => {
+            sessionStorage.setItem('openSaleForm', 'true');
+            setCurrentPage('sales');
+          }}
+          className="relative overflow-hidden flex items-center gap-5 p-6 bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 hover:from-blue-600 hover:via-blue-700 hover:to-blue-800 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group"
+        >
+          {/* Background decoration */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-16 translate-x-16 group-hover:scale-150 transition-transform duration-500" />
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-12 -translate-x-12 group-hover:scale-150 transition-transform duration-500" />
+          
+          <div className="relative p-4 bg-white/20 backdrop-blur-sm rounded-xl group-hover:bg-white/30 group-hover:scale-110 transition-all duration-300 shadow-inner">
+            <Plus size={32} strokeWidth={2.5} />
+          </div>
+          <div className="relative text-left flex-1">
+            <p className="text-xl font-bold tracking-tight">New Sale</p>
+            <p className="text-sm text-blue-100 mt-0.5">Create a new sale entry</p>
+          </div>
+          <div className="relative opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </div>
+        </button>
+        
+        <button
+          onClick={() => {
+            sessionStorage.setItem('openPurchaseForm', 'true');
+            setCurrentPage('purchases');
+          }}
+          className="relative overflow-hidden flex items-center gap-5 p-6 bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 hover:from-emerald-600 hover:via-emerald-700 hover:to-emerald-800 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group"
+        >
+          {/* Background decoration */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-16 translate-x-16 group-hover:scale-150 transition-transform duration-500" />
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-12 -translate-x-12 group-hover:scale-150 transition-transform duration-500" />
+          
+          <div className="relative p-4 bg-white/20 backdrop-blur-sm rounded-xl group-hover:bg-white/30 group-hover:scale-110 transition-all duration-300 shadow-inner">
+            <Plus size={32} strokeWidth={2.5} />
+          </div>
+          <div className="relative text-left flex-1">
+            <p className="text-xl font-bold tracking-tight">New Purchase</p>
+            <p className="text-sm text-emerald-100 mt-0.5">Create a new purchase entry</p>
+          </div>
+          <div className="relative opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </div>
+        </button>
       </div>
 
       {/* Stat Cards */}
