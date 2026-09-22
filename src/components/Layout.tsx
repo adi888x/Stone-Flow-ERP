@@ -75,15 +75,31 @@ export function Layout({ currentPage, setCurrentPage, children }: LayoutProps) {
             <button
               key={item.id}
               onClick={() => { setCurrentPage(item.id); setSidebarOpen(false); }}
-                className={`w-full flex items-center gap-3 px-4 py-3 text-base transition-all relative ${
+              className={`w-full flex items-center gap-3 px-4 py-3 text-base transition-all relative overflow-hidden group ${
                 currentPage === item.id
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold border-l-4 border-white shadow-lg shadow-purple-500/30'
-                  : 'text-slate-300 hover:bg-slate-800 hover:text-white border-l-4 border-transparent'
-              }`}            >
-              <span className={currentPage === item.id ? 'text-white' : ''}>
+                  ? 'bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 text-white font-bold shadow-lg shadow-blue-500/30'
+                  : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+              }`}
+            >
+              {/* Decorative background circles for selected state */}
+              {currentPage === item.id && (
+                <>
+                  <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -translate-y-10 translate-x-10" />
+                  <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/5 rounded-full translate-y-8 -translate-x-8" />
+                </>
+              )}
+              <div className={`relative p-1.5 rounded-lg transition-all ${
+                currentPage === item.id 
+                  ? 'bg-white/20 backdrop-blur-sm' 
+                  : ''
+              }`}>
                 {item.icon}
-              </span>
-              <span>{item.label}</span>
+              </div>
+              <span className="relative">{item.label}</span>
+              {/* Active indicator bar on left */}
+              {currentPage === item.id && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full" />
+              )}
             </button>
           ))}
         </nav>
