@@ -75,13 +75,15 @@ export function Layout({ currentPage, setCurrentPage, children }: LayoutProps) {
             <button
               key={item.id}
               onClick={() => { setCurrentPage(item.id); setSidebarOpen(false); }}
-              className={`w-full flex items-center gap-3 px-4 py-3 text-base transition-colors ${
+              className={`w-full flex items-center gap-3 px-4 py-3 text-base transition-all ${
                 currentPage === item.id
-                  ? 'bg-blue-600/20 text-blue-300 border-r-2 border-blue-400'
-                  : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                  ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold border-l-4 border-blue-400 shadow-lg shadow-blue-500/20'
+                  : 'text-slate-300 hover:bg-slate-800 hover:text-white border-l-4 border-transparent'
               }`}
             >
-              {item.icon}
+              <span className={currentPage === item.id ? 'text-white' : ''}>
+                {item.icon}
+              </span>
               <span>{item.label}</span>
             </button>
           ))}
