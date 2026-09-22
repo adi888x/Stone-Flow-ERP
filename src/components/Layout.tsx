@@ -108,7 +108,7 @@ export function Layout({ currentPage, setCurrentPage, children }: LayoutProps) {
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top bar */}
-        <header className="h-14 bg-white border-b border-slate-200 flex items-center px-4 gap-4 shrink-0">
+        <header className="h-14 bg-white flex items-center px-4 gap-4 shrink-0">
           <button className="lg:hidden p-2 hover:bg-slate-100 rounded" onClick={() => setSidebarOpen(true)}>
             <Menu size={20} />
           </button>
