@@ -30,7 +30,7 @@ export function SuppliersPage() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div><p className="text-sm text-slate-500">Manage supplier information and accounts</p></div>
+        <div><h1 className="text-xl font-bold text-slate-800">Suppliers</h1><p className="text-sm text-slate-500">Manage supplier information and accounts</p></div>
         <button onClick={() => setShowForm(true)} disabled={store.isDemoMode} className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white rounded-lg text-sm font-medium"><Plus size={16} /> Add Supplier</button>
       </div>
       <div className="bg-white rounded-xl border border-slate-200 p-4">

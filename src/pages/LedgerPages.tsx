@@ -41,7 +41,7 @@ export function CustomerLedgerPage() {
 
   return (
     <div className="space-y-4">
-      <div><p className="text-sm text-slate-500">View customer transaction history and running balance</p></div>
+      <div><h1 className="text-xl font-bold text-slate-800">Customer Ledger</h1><p className="text-sm text-slate-500">View customer transaction history and running balance</p></div>
       <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap gap-3">
         <select value={selectedCustomer} onChange={e => setSelectedCustomer(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm min-w-[200px]">
           <option value="">Select Customer</option>
@@ -117,7 +117,7 @@ export function SupplierLedgerPage() {
 
   return (
     <div className="space-y-4">
-      <div><p className="text-sm text-slate-500">View supplier transaction history and running balance</p></div>
+      <div><h1 className="text-xl font-bold text-slate-800">Supplier Ledger</h1><p className="text-sm text-slate-500">View supplier transaction history and running balance</p></div>
       <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap gap-3">
         <select value={selectedSupplier} onChange={e => setSelectedSupplier(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm min-w-[200px]">
           <option value="">Select Supplier</option>

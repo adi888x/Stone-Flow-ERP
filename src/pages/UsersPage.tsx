@@ -21,7 +21,7 @@ export function UsersPage() {
 
   return (
     <div className="space-y-4">
-      <div><p className="text-sm text-slate-500">Manage system users and roles</p></div>
+      <div><h1 className="text-xl font-bold text-slate-800">Users</h1><p className="text-sm text-slate-500">Manage system users and roles</p></div>
 
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         <table className="erp-table">

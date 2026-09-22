@@ -33,7 +33,7 @@ export function RatesPage() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div><p className="text-sm text-slate-500">Manage customer-specific pricing (per BRASS)</p></div>
+        <div><h1 className="text-xl font-bold text-slate-800">Customer Rates</h1><p className="text-sm text-slate-500">Manage customer-specific pricing (per BRASS)</p></div>
         <button onClick={() => setShowForm(true)} disabled={store.isDemoMode} className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white rounded-lg text-sm font-medium"><Plus size={16} /> Add Rate</button>
       </div>
       <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800">

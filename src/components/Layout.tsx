@@ -112,11 +112,7 @@ export function Layout({ currentPage, setCurrentPage, children }: LayoutProps) {
           <button className="lg:hidden p-2 hover:bg-slate-100 rounded" onClick={() => setSidebarOpen(true)}>
             <Menu size={20} />
           </button>
-          <div className="flex-1">
-            <h2 className="text-lg font-semibold text-slate-800">
-              {NAV_ITEMS.find(n => n.id === currentPage)?.label || 'Dashboard'}
-            </h2>
-          </div>
+          <div className="flex-1"></div>
           <div className="relative">
             <button
               onClick={() => setUserMenuOpen(!userMenuOpen)}
