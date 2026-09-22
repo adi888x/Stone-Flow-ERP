@@ -35,23 +35,8 @@ type Page = 'dashboard' | 'sales' | 'purchases' | 'expenses' | 'customers' | 'su
 export default function App() {
   const store = useStore();
   const [currentPage, setCurrentPage] = useState<Page>('dashboard');
-  const [isReady, setIsReady] = useState(false);
-
-  // Small delay to ensure smooth transition from HTML loader
-  React.useEffect(() => {
-    const timer = setTimeout(() => setIsReady(true), 50);
-    return () => clearTimeout(timer);
-  }, []);
 
   const content = useMemo(() => {
-    if (!isReady) {
-      return (
-        <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center">
-          <h1 className="text-4xl font-bold text-white tracking-wider mb-6">BWS</h1>
-          <div className="w-9 h-9 rounded-full border-[3px] border-slate-700 border-t-blue-500 animate-spin" />
-        </div>
-      );
-    }
     if (!store.currentUser) return <LoginPage />;
     return (
       <Layout currentPage={currentPage} setCurrentPage={setCurrentPage}>
@@ -74,7 +59,7 @@ export default function App() {
         {currentPage === 'settings' && <SettingsPage />}
       </Layout>
     );
-  }, [store.currentUser, currentPage, store, isReady]);
+  }, [store.currentUser, currentPage, store]);
 
   return (
     <StoreContext.Provider value={store}>
