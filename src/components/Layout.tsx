@@ -56,10 +56,10 @@ export function Layout({ currentPage, setCurrentPage, children }: LayoutProps) {
         {/* Logo */}
         <div className="p-4 border-b border-slate-700">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-sm">BW</div>
+            <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-sm">BWS</div>
             <div>
-              <h1 className="font-bold text-sm leading-tight">BALAJI WASH SAND</h1>
-              <p className="text-xs text-slate-400">ERP System</p>
+              <h1 className="font-bold text-base leading-tight">BALAJI WASH SAND</h1>
+              <p className="text-xs text-slate-400">Business Management Software</p>
             </div>
           </div>
           {store.isDemoMode && (
