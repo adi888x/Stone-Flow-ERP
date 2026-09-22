@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useStoreContext } from '../App';
-import { Plus, Search, X } from 'lucide-react';
+import { Plus, Search, X, MoreVertical, Edit2, Trash2, Settings } from 'lucide-react';
 function formatCurrency(n: number) { return '₹' + n.toLocaleString('en-IN'); }
 
 export function RatesPage() {
@@ -10,6 +10,24 @@ export function RatesPage() {
   const [customerFilter, setCustomerFilter] = useState('');
   const [form, setForm] = useState({ customer_id: '', material_id: '', rate: '', effective_from: new Date().toISOString().split('T')[0] });
   const [error, setError] = useState('');
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpenMenu(null);
+      }
+    };
+
+    if (openMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [openMenu]);
 
   const filtered = useMemo(() => {
     return store.customerRates.filter(r => {
@@ -36,7 +54,10 @@ export function RatesPage() {
       <div className="flex-shrink-0 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div><h1 className="text-xl font-bold text-slate-800">Customer Rates</h1><p className="text-sm text-slate-500">Manage customer-specific pricing (per BRASS)</p></div>
-          <button onClick={() => setShowForm(true)} disabled={store.isDemoMode} className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white rounded-lg text-sm font-medium"><Plus size={16} /> Add Rate</button>
+          <div className="flex gap-2">
+            <button onClick={() => alert('Change Default Rate feature - to be implemented')} disabled={store.isDemoMode} className="inline-flex items-center gap-2 px-4 py-2 bg-slate-600 hover:bg-slate-700 disabled:bg-slate-300 text-white rounded-lg text-sm font-medium"><Settings size={16} /> Change Default Rate</button>
+            <button onClick={() => setShowForm(true)} disabled={store.isDemoMode} className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white rounded-lg text-sm font-medium"><Plus size={16} /> Add Rate</button>
+          </div>
         </div>
         <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800">
           <strong>Default Rate:</strong> {formatCurrency(store.appSettings.default_rate)} / BRASS — Applied when no customer-specific rate exists.
@@ -51,11 +72,13 @@ export function RatesPage() {
       <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
         <div className="flex-1 overflow-auto">
         <table className="erp-table text-base">
-          <thead className="sticky top-0 bg-white z-10 shadow-sm"><tr><th>Customer</th><th>Material</th><th>Rate / BRASS</th><th>Effective From</th><th>Effective To</th><th>Status</th></tr></thead>
+          <thead className="sticky top-0 bg-white z-10 shadow-sm"><tr><th>Customer</th><th>Material</th><th>Rate / BRASS</th><th>Effective From</th><th>Effective To</th><th>Status</th><th></th></tr></thead>
           <tbody>
             {filtered.map(r => {
               const customer = store.customers.find(c => c.id === r.customer_id);
               const material = store.materials.find(m => m.id === r.material_id);
+              const today = new Date().toISOString().split('T')[0];
+              const canEdit = r.effective_from > today;
               return (
                 <tr key={r.id}>
                   <td className="font-medium">{customer?.customer_name}</td>
@@ -64,6 +87,46 @@ export function RatesPage() {
                   <td>{r.effective_from}</td>
                   <td>{r.effective_to || '—'}</td>
                   <td><span className={`px-2 py-0.5 rounded-full text-xs font-medium ${r.is_active ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'}`}>{r.is_active ? 'Active' : 'Inactive'}</span></td>
+                  <td className="relative">
+                    <div ref={openMenu === r.id ? menuRef : null} className="relative">
+                      <button 
+                        onClick={() => setOpenMenu(openMenu === r.id ? null : r.id)}
+                        className="p-1.5 hover:bg-slate-100 rounded"
+                      >
+                        <MoreVertical size={16} />
+                      </button>
+                      {openMenu === r.id && (
+                        <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-[9999]">
+                          <button 
+                            onClick={() => {
+                              if (!canEdit) {
+                                alert('Cannot edit rate after effective date.');
+                              } else {
+                                // Edit rate logic
+                              }
+                              setOpenMenu(null);
+                            }}
+                            className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 flex items-center gap-2"
+                          >
+                            <Edit2 size={14} /> Edit Rate
+                          </button>
+                          <button 
+                            onClick={() => {
+                              if (!canEdit) {
+                                alert('Cannot delete rate after effective date.');
+                              } else if (confirm('Are you sure you want to delete this rate?')) {
+                                // Delete rate logic
+                              }
+                              setOpenMenu(null);
+                            }}
+                            className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                          >
+                            <Trash2 size={14} /> Delete Rate
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </td>
                 </tr>
               );
             })}

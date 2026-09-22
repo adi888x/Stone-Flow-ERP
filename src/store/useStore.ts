@@ -51,9 +51,6 @@ const DEMO_VEHICLES: Vehicle[] = [
 
 const DEMO_MATERIALS: Material[] = [
   { id: 'm1', material_name: 'Wash Sand', category: 'Sand', unit: 'BRASS', description: 'Premium quality washed sand for construction', is_active: true, created_at: '2026-01-01', updated_at: '2026-01-01' },
-  { id: 'm2', material_name: 'River Sand', category: 'Sand', unit: 'BRASS', description: 'Natural river sand', is_active: true, created_at: '2026-01-01', updated_at: '2026-01-01' },
-  { id: 'm3', material_name: 'M-Sand', category: 'Sand', unit: 'BRASS', description: 'Manufactured sand', is_active: true, created_at: '2026-01-01', updated_at: '2026-01-01' },
-  { id: 'm4', material_name: 'Stone Dust', category: 'Aggregate', unit: 'BRASS', description: 'Crusher stone dust', is_active: true, created_at: '2026-01-01', updated_at: '2026-01-01' },
 ];
 
 const DEMO_RATES: CustomerRate[] = [

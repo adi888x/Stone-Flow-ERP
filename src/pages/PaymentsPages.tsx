@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useStoreContext } from '../App';
-import { Plus, Search, X } from 'lucide-react';
+import { Plus, Search, X, MoreVertical, Edit, Trash2 } from 'lucide-react';
 function formatCurrency(n: number) { return '₹' + n.toLocaleString('en-IN'); }
 const PAYMENT_MODES = ['Cash', 'UPI', 'Bank Transfer', 'Card', 'Other'] as const;
 
@@ -10,6 +10,24 @@ export function CustomerPaymentsPage() {
   const [search, setSearch] = useState('');
   const [form, setForm] = useState({ customer_id: '', amount: '', payment_mode: 'Cash' as typeof PAYMENT_MODES[number], reference_number: '', notes: '' });
   const [error, setError] = useState('');
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpenMenu(null);
+      }
+    };
+
+    if (openMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [openMenu]);
 
   const filtered = useMemo(() => {
     return store.customerPayments.filter(p => {
@@ -43,20 +61,54 @@ export function CustomerPaymentsPage() {
       <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
         <div className="flex-1 overflow-auto">
         <table className="erp-table text-base">
-          <thead className="sticky top-0 bg-white z-10 shadow-sm"><tr><th>Date</th><th>Payment No.</th><th>Customer</th><th>Amount</th><th>Mode</th><th>Reference</th><th>Created By</th></tr></thead>
+          <thead className="sticky top-0 bg-white z-10 shadow-sm"><tr><th>Date</th><th>Payment No.</th><th>Customer</th><th>Amount</th><th>Mode</th><th>Reference</th><th>Created By</th><th></th></tr></thead>
           <tbody>
-            {filtered.length === 0 ? <tr><td colSpan={7} className="text-center py-8 text-slate-500">No payments found</td></tr> :
+            {filtered.length === 0 ? <tr><td colSpan={8} className="text-center py-8 text-slate-500">No payments found</td></tr> :
               filtered.map(p => {
                 const customer = store.customers.find(c => c.id === p.customer_id);
                 return (
                   <tr key={p.id}>
                     <td>{p.date}</td>
-                    <td className="font-mono text-xs">{p.payment_number}</td>
+                    <td className="font-mono text-base">{p.payment_number}</td>
                     <td className="font-medium">{customer?.customer_name}</td>
                     <td className="font-bold text-green-700">{formatCurrency(p.amount)}</td>
                     <td><span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-xs">{p.payment_mode}</span></td>
-                    <td className="font-mono text-xs">{p.reference_number || '—'}</td>
+                    <td className="font-mono text-base">{p.reference_number || '—'}</td>
                     <td>{p.created_by}</td>
+                    <td className="relative">
+                      <div ref={openMenu === p.id ? menuRef : null} className="relative">
+                        <button 
+                          onClick={() => setOpenMenu(openMenu === p.id ? null : p.id)}
+                          className="p-1.5 hover:bg-slate-100 rounded"
+                        >
+                          <MoreVertical size={16} />
+                        </button>
+                        {openMenu === p.id && (
+                          <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-[9999]">
+                            <button 
+                              onClick={() => {
+                                // Edit payment logic
+                                setOpenMenu(null);
+                              }}
+                              className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 flex items-center gap-2"
+                            >
+                              <Edit size={14} /> Edit Payment
+                            </button>
+                            <button 
+                              onClick={() => {
+                                if (confirm('Are you sure you want to delete this payment?')) {
+                                  // Delete payment logic
+                                  setOpenMenu(null);
+                                }
+                              }}
+                              className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                            >
+                              <Trash2 size={14} /> Delete Payment
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </td>
                   </tr>
                 );
               })}
@@ -96,6 +148,24 @@ export function SupplierPaymentsPage() {
   const [search, setSearch] = useState('');
   const [form, setForm] = useState({ supplier_id: '', amount: '', payment_mode: 'Cash' as typeof PAYMENT_MODES[number], reference_number: '', notes: '' });
   const [error, setError] = useState('');
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpenMenu(null);
+      }
+    };
+
+    if (openMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [openMenu]);
 
   const filtered = useMemo(() => {
     return store.supplierPayments.filter(p => {
@@ -129,20 +199,54 @@ export function SupplierPaymentsPage() {
       <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
         <div className="flex-1 overflow-auto">
         <table className="erp-table text-base">
-          <thead className="sticky top-0 bg-white z-10 shadow-sm"><tr><th>Date</th><th>Payment No.</th><th>Supplier</th><th>Amount</th><th>Mode</th><th>Reference</th><th>Created By</th></tr></thead>
+          <thead className="sticky top-0 bg-white z-10 shadow-sm"><tr><th>Date</th><th>Payment No.</th><th>Supplier</th><th>Amount</th><th>Mode</th><th>Reference</th><th>Created By</th><th></th></tr></thead>
           <tbody>
-            {filtered.length === 0 ? <tr><td colSpan={7} className="text-center py-8 text-slate-500">No payments found</td></tr> :
+            {filtered.length === 0 ? <tr><td colSpan={8} className="text-center py-8 text-slate-500">No payments found</td></tr> :
               filtered.map(p => {
                 const supplier = store.suppliers.find(s => s.id === p.supplier_id);
                 return (
                   <tr key={p.id}>
                     <td>{p.date}</td>
-                    <td className="font-mono text-xs">{p.payment_number}</td>
+                    <td className="font-mono text-base">{p.payment_number}</td>
                     <td className="font-medium">{supplier?.supplier_name}</td>
                     <td className="font-bold text-red-700">{formatCurrency(p.amount)}</td>
                     <td><span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-xs">{p.payment_mode}</span></td>
-                    <td className="font-mono text-xs">{p.reference_number || '—'}</td>
+                    <td className="font-mono text-base">{p.reference_number || '—'}</td>
                     <td>{p.created_by}</td>
+                    <td className="relative">
+                      <div ref={openMenu === p.id ? menuRef : null} className="relative">
+                        <button 
+                          onClick={() => setOpenMenu(openMenu === p.id ? null : p.id)}
+                          className="p-1.5 hover:bg-slate-100 rounded"
+                        >
+                          <MoreVertical size={16} />
+                        </button>
+                        {openMenu === p.id && (
+                          <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-[9999]">
+                            <button 
+                              onClick={() => {
+                                // Edit payment logic
+                                setOpenMenu(null);
+                              }}
+                              className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 flex items-center gap-2"
+                            >
+                              <Edit size={14} /> Edit Payment
+                            </button>
+                            <button 
+                              onClick={() => {
+                                if (confirm('Are you sure you want to delete this payment?')) {
+                                  // Delete payment logic
+                                  setOpenMenu(null);
+                                }
+                              }}
+                              className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                            >
+                              <Trash2 size={14} /> Delete Payment
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </td>
                   </tr>
                 );
               })}

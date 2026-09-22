@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useStoreContext } from '../App';
-import { Plus, Search, X, Edit2, Eye } from 'lucide-react';
+import { Plus, Search, X, Edit2, Eye, MoreVertical, Trash2 } from 'lucide-react';
 
 function formatCurrency(n: number) { return '₹' + n.toLocaleString('en-IN'); }
 
@@ -12,6 +12,24 @@ export function CustomersPage() {
   const [selectedCustomer, setSelectedCustomer] = useState<string | null>(null);
   const [form, setForm] = useState({ customer_name: '', mobile: '', alternate_mobile: '', address: '', contact_person: '', notes: '' });
   const [error, setError] = useState('');
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpenMenu(null);
+      }
+    };
+
+    if (openMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [openMenu]);
 
   const filtered = useMemo(() => {
     return store.customers.filter(c => {
@@ -66,7 +84,7 @@ export function CustomersPage() {
       <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
         <div className="flex-1 overflow-auto">
           <table className="erp-table text-base">
-            <thead className="sticky top-0 bg-white z-10 shadow-sm"><tr><th>Customer</th><th>Mobile</th><th>Vehicles</th><th>Total Sales</th><th>Total Qty (BRASS)</th><th>Outstanding</th><th>Status</th><th>Actions</th></tr></thead>
+            <thead className="sticky top-0 bg-white z-10 shadow-sm"><tr><th>Customer</th><th>Mobile</th><th>Vehicles</th><th>Total Sales</th><th>Total Qty (BRASS)</th><th>Outstanding</th><th>Status</th><th></th></tr></thead>
             <tbody>
               {filtered.map(c => {
                 const sales = store.sales.filter(s => s.customer_id === c.id && s.transaction_state === 'FULFILLED');
@@ -74,6 +92,7 @@ export function CustomersPage() {
                 const totalQty = sales.reduce((s, x) => s + x.quantity_brass, 0);
                 const vehicles = store.vehicles.filter(v => v.customer_id === c.id).length;
                 const outst = store.getCustomerOutstanding(c.id);
+                const hasEntries = sales.length > 0 || store.customerPayments.filter(p => p.customer_id === c.id).length > 0;
                 return (
                   <tr key={c.id}>
                     <td className="font-medium">{c.customer_name}</td>
@@ -83,7 +102,51 @@ export function CustomersPage() {
                     <td>{totalQty.toFixed(2)}</td>
                     <td className={`font-medium ${outst > 0 ? 'text-red-600' : 'text-green-600'}`}>{formatCurrency(outst)}</td>
                     <td><span className={`px-2 py-0.5 rounded-full text-xs font-medium ${c.is_active ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'}`}>{c.is_active ? 'Active' : 'Inactive'}</span></td>
-                    <td><button onClick={() => setSelectedCustomer(c.id)} className="p-1.5 hover:bg-blue-50 rounded text-blue-600"><Eye size={14} /></button></td>
+                    <td className="relative">
+                      <div ref={openMenu === c.id ? menuRef : null} className="relative">
+                        <button 
+                          onClick={() => setOpenMenu(openMenu === c.id ? null : c.id)}
+                          className="p-1.5 hover:bg-slate-100 rounded"
+                        >
+                          <MoreVertical size={16} />
+                        </button>
+                        {openMenu === c.id && (
+                          <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-[9999]">
+                            <button 
+                              onClick={() => {
+                                setSelectedCustomer(c.id);
+                                setOpenMenu(null);
+                              }}
+                              className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 flex items-center gap-2"
+                            >
+                              <Eye size={14} /> View More Info
+                            </button>
+                            <button 
+                              onClick={() => {
+                                // Edit customer logic
+                                setOpenMenu(null);
+                              }}
+                              className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 flex items-center gap-2"
+                            >
+                              <Edit2 size={14} /> Edit Customer Info
+                            </button>
+                            <button 
+                              onClick={() => {
+                                if (hasEntries) {
+                                  alert('Cannot delete customer with existing entries.');
+                                } else if (confirm('Are you sure you want to delete this customer?')) {
+                                  // Delete customer logic
+                                }
+                                setOpenMenu(null);
+                              }}
+                              className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                            >
+                              <Trash2 size={14} /> Delete Customer
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </td>
                   </tr>
                 );
               })}

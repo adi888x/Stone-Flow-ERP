@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useStoreContext } from '../App';
-import { Plus, Search, X } from 'lucide-react';
+import { Plus, Search, X, MoreVertical, Edit2, Trash2 } from 'lucide-react';
 
 export function VehiclesPage() {
   const store = useStoreContext();
@@ -10,6 +10,24 @@ export function VehiclesPage() {
   const [ownerFilter, setOwnerFilter] = useState<'all' | 'customer' | 'supplier'>('all');
   const [form, setForm] = useState({ vehicle_number: '', vehicle_type: 'TIPPER', owner_name: '', customer_id: '', supplier_id: '', driver_name: '', driver_mobile: '', capacity: '' });
   const [error, setError] = useState('');
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpenMenu(null);
+      }
+    };
+
+    if (openMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [openMenu]);
 
   const filtered = useMemo(() => {
     return store.vehicles.filter(v => {
@@ -52,14 +70,15 @@ export function VehiclesPage() {
       <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
         <div className="flex-1 overflow-auto">
           <table className="erp-table text-base">
-            <thead className="sticky top-0 bg-white z-10 shadow-sm"><tr><th>Vehicle No.</th><th>Type</th><th>Owner</th><th>Customer/Supplier</th><th>Driver</th><th>Mobile</th><th>Capacity</th><th>Status</th></tr></thead>
+            <thead className="sticky top-0 bg-white z-10 shadow-sm"><tr><th>Vehicle No.</th><th>Type</th><th>Owner</th><th>Customer/Supplier</th><th>Driver</th><th>Mobile</th><th>Capacity</th><th>Status</th><th></th></tr></thead>
             <tbody>
               {filtered.map(v => {
                 const customer = store.customers.find(c => c.id === v.customer_id);
                 const supplier = store.suppliers.find(s => s.id === v.supplier_id);
+                const hasEntries = store.sales.filter(s => s.vehicle_id === v.id).length > 0 || store.purchases.filter(p => p.vehicle_id === v.id).length > 0;
                 return (
                   <tr key={v.id}>
-                    <td className="font-mono font-medium">{v.vehicle_number}</td>
+                    <td className="font-mono font-bold">{v.vehicle_number}</td>
                     <td><span className="px-2 py-0.5 bg-slate-100 rounded text-xs">{v.vehicle_type}</span></td>
                     <td>{v.owner_name}</td>
                     <td>{customer?.customer_name || supplier?.supplier_name || '—'}</td>
@@ -67,6 +86,46 @@ export function VehiclesPage() {
                     <td>{v.driver_mobile || '—'}</td>
                     <td>{v.capacity || '—'}</td>
                     <td><span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">Active</span></td>
+                    <td className="relative">
+                      <div ref={openMenu === v.id ? menuRef : null} className="relative">
+                        <button 
+                          onClick={() => setOpenMenu(openMenu === v.id ? null : v.id)}
+                          className="p-1.5 hover:bg-slate-100 rounded"
+                        >
+                          <MoreVertical size={16} />
+                        </button>
+                        {openMenu === v.id && (
+                          <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-[9999]">
+                            <button 
+                              onClick={() => {
+                                if (hasEntries) {
+                                  alert('Cannot edit vehicle with existing entries.');
+                                } else {
+                                  // Edit vehicle logic
+                                }
+                                setOpenMenu(null);
+                              }}
+                              className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 flex items-center gap-2"
+                            >
+                              <Edit2 size={14} /> Edit Vehicle
+                            </button>
+                            <button 
+                              onClick={() => {
+                                if (hasEntries) {
+                                  alert('Cannot delete vehicle with existing entries.');
+                                } else if (confirm('Are you sure you want to delete this vehicle?')) {
+                                  // Delete vehicle logic
+                                }
+                                setOpenMenu(null);
+                              }}
+                              className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                            >
+                              <Trash2 size={14} /> Delete Vehicle
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </td>
                   </tr>
                 );
               })}
