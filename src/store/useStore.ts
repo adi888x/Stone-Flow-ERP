@@ -26,15 +26,15 @@ function generateSlipNumber(prefix: string, existing: string[]): string {
 
 // ---- Demo Data ----
 const DEMO_CUSTOMERS: Customer[] = [
-  { id: 'c1', customer_name: 'ABC Constructions', mobile: '9876543210', address: 'Pune, Maharashtra', gstin: '27AABCU9603R1ZM', contact_person: 'Rajesh Patil', is_active: true, created_at: '2026-01-15', updated_at: '2026-01-15' },
-  { id: 'c2', customer_name: 'XYZ Developers', mobile: '9876543211', address: 'Mumbai, Maharashtra', gstin: '27AADCU9604R1ZN', contact_person: 'Suresh Sharma', is_active: true, created_at: '2026-01-20', updated_at: '2026-01-20' },
+  { id: 'c1', customer_name: 'ABC Constructions', mobile: '9876543210', address: 'Pune, Maharashtra', contact_person: 'Rajesh Patil', is_active: true, created_at: '2026-01-15', updated_at: '2026-01-15' },
+  { id: 'c2', customer_name: 'XYZ Developers', mobile: '9876543211', address: 'Mumbai, Maharashtra', contact_person: 'Suresh Sharma', is_active: true, created_at: '2026-01-20', updated_at: '2026-01-20' },
   { id: 'c3', customer_name: 'PQR Builders', mobile: '9876543212', address: 'Nashik, Maharashtra', contact_person: 'Amit Deshmukh', is_active: true, created_at: '2026-02-01', updated_at: '2026-02-01' },
-  { id: 'c4', customer_name: 'Sunrise Infra', mobile: '9876543213', address: 'Pune, Maharashtra', gstin: '27AAECU9605R1ZK', contact_person: 'Vikram Joshi', is_active: true, created_at: '2026-02-10', updated_at: '2026-02-10' },
+  { id: 'c4', customer_name: 'Sunrise Infra', mobile: '9876543213', address: 'Pune, Maharashtra', contact_person: 'Vikram Joshi', is_active: true, created_at: '2026-02-10', updated_at: '2026-02-10' },
   { id: 'c5', customer_name: 'Green Valley Homes', mobile: '9876543214', address: 'Satara, Maharashtra', contact_person: 'Manoj Kulkarni', is_active: false, created_at: '2026-03-01', updated_at: '2026-03-01' },
 ];
 
 const DEMO_SUPPLIERS: Supplier[] = [
-  { id: 's1', supplier_name: 'River Sand Co.', mobile: '9988776655', address: 'River Bed, Pune', gstin: '27AARSU9603R1ZM', contact_person: 'Ganesh Pawar', is_active: true, created_at: '2026-01-10', updated_at: '2026-01-10' },
+  { id: 's1', supplier_name: 'River Sand Co.', mobile: '9988776655', address: 'River Bed, Pune', contact_person: 'Ganesh Pawar', is_active: true, created_at: '2026-01-10', updated_at: '2026-01-10' },
   { id: 's2', supplier_name: 'Mountain Minerals', mobile: '9988776656', address: 'Quarry Zone, Nashik', contact_person: 'Ravi Shinde', is_active: true, created_at: '2026-01-15', updated_at: '2026-01-15' },
   { id: 's3', supplier_name: 'Deccan Aggregates', mobile: '9988776657', address: 'Mine Area, Satara', contact_person: 'Sanjay More', is_active: true, created_at: '2026-02-01', updated_at: '2026-02-01' },
 ];

@@ -23,7 +23,6 @@ export interface Customer {
   mobile: string;
   alternate_mobile?: string;
   address: string;
-  gstin?: string;
   contact_person?: string;
   notes?: string;
   is_active: boolean;
@@ -37,7 +36,6 @@ export interface Supplier {
   mobile: string;
   alternate_mobile?: string;
   address: string;
-  gstin?: string;
   contact_person?: string;
   notes?: string;
   is_active: boolean;

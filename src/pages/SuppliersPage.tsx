@@ -8,7 +8,7 @@ export function SuppliersPage() {
   const [showForm, setShowForm] = useState(false);
   const [search, setSearch] = useState('');
   const [selectedSupplier, setSelectedSupplier] = useState<string | null>(null);
-  const [form, setForm] = useState({ supplier_name: '', mobile: '', alternate_mobile: '', address: '', gstin: '', contact_person: '', notes: '' });
+  const [form, setForm] = useState({ supplier_name: '', mobile: '', alternate_mobile: '', address: '', contact_person: '', notes: '' });
   const [error, setError] = useState('');
 
   const filtered = useMemo(() => store.suppliers.filter(s => !search || s.supplier_name.toLowerCase().includes(search.toLowerCase()) || s.mobile.includes(search)), [store.suppliers, search]);
@@ -18,7 +18,7 @@ export function SuppliersPage() {
     if (!form.mobile) { setError('Mobile number is required.'); return; }
     if (store.isDemoMode) { setError('Demo mode is read-only.'); return; }
     store.addSupplier({ ...form, is_active: true });
-    setShowForm(false); setForm({ supplier_name: '', mobile: '', alternate_mobile: '', address: '', gstin: '', contact_person: '', notes: '' });
+    setShowForm(false); setForm({ supplier_name: '', mobile: '', alternate_mobile: '', address: '', contact_person: '', notes: '' });
   };
 
   const supplierDetail = selectedSupplier ? store.suppliers.find(s => s.id === selectedSupplier) : null;
@@ -39,7 +39,7 @@ export function SuppliersPage() {
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="erp-table">
-            <thead><tr><th>Supplier</th><th>Mobile</th><th>GSTIN</th><th>Vehicles</th><th>Total Purchases</th><th>Total Qty (BRASS)</th><th>Outstanding</th><th>Status</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Supplier</th><th>Mobile</th><th>Vehicles</th><th>Total Purchases</th><th>Total Qty (BRASS)</th><th>Outstanding</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody>
               {filtered.map(s => {
                 const purchases = store.purchases.filter(p => p.supplier_id === s.id && p.transaction_state === 'ACTIVE');
@@ -49,7 +49,7 @@ export function SuppliersPage() {
                 const outst = store.getSupplierOutstanding(s.id);
                 return (
                   <tr key={s.id}>
-                    <td className="font-medium">{s.supplier_name}</td><td>{s.mobile}</td><td className="font-mono text-xs">{s.gstin || '—'}</td><td>{vehicles}</td>
+                    <td className="font-medium">{s.supplier_name}</td><td>{s.mobile}</td><td>{vehicles}</td>
                     <td>{formatCurrency(totalPurchases)}</td><td>{totalQty.toFixed(2)}</td>
                     <td className={`font-medium ${outst > 0 ? 'text-red-600' : 'text-green-600'}`}>{formatCurrency(outst)}</td>
                     <td><span className={`px-2 py-0.5 rounded-full text-xs font-medium ${s.is_active ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'}`}>{s.is_active ? 'Active' : 'Inactive'}</span></td>
@@ -73,7 +73,7 @@ export function SuppliersPage() {
                 <div><span className="text-slate-500">Mobile:</span> <span className="font-medium">{supplierDetail.mobile}</span></div>
                 <div><span className="text-slate-500">Contact:</span> <span className="font-medium">{supplierDetail.contact_person || '—'}</span></div>
                 <div><span className="text-slate-500">Address:</span> <span className="font-medium">{supplierDetail.address}</span></div>
-                <div><span className="text-slate-500">GSTIN:</span> <span className="font-medium font-mono">{supplierDetail.gstin || '—'}</span></div>
+
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="p-3 bg-blue-50 rounded-lg text-center"><p className="text-lg font-bold text-blue-800">{supplierPurchases.length}</p><p className="text-xs text-blue-600">Purchases</p></div>
@@ -103,7 +103,7 @@ export function SuppliersPage() {
               </div>
               <div><label className="block text-sm font-medium text-slate-700 mb-1">Address</label><textarea value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} rows={2} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" /></div>
               <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium text-slate-700 mb-1">GSTIN</label><input type="text" value={form.gstin} onChange={e => setForm({ ...form, gstin: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" /></div>
+                
                 <div><label className="block text-sm font-medium text-slate-700 mb-1">Contact Person</label><input type="text" value={form.contact_person} onChange={e => setForm({ ...form, contact_person: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" /></div>
               </div>
             </div>
