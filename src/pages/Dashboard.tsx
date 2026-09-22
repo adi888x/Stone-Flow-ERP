@@ -168,7 +168,7 @@ export function Dashboard({ setCurrentPage }: DashboardProps) {
       </div>
 
       {/* Date Range Filter */}
-      <div className="flex gap-2">
+      <div className="flex justify-start gap-2">
         {(['today', 'week', 'month'] as const).map(r => (
           <button
             key={r}
