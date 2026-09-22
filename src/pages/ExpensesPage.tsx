@@ -102,7 +102,7 @@ export function ExpensesPage() {
       <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
         <div className="flex-1 overflow-auto">
           <table className="erp-table text-base">
-            <thead><tr><th>Date</th><th>Expense No.</th><th>Category</th><th>Description</th><th>Vendor/Person</th><th>Paid By</th><th>Mode</th><th>Amount</th><th></th></tr></thead>
+            <thead className="sticky top-0 bg-white z-10 shadow-sm"><tr><th>Date</th><th>Expense No.</th><th>Category</th><th>Description</th><th>Vendor/Person</th><th>Paid By</th><th>Mode</th><th>Amount</th><th></th></tr></thead>
             <tbody>
               {filtered.length === 0 ? <tr><td colSpan={9} className="text-center py-8 text-slate-500">No expenses found</td></tr> :
                 filtered.map(e => (

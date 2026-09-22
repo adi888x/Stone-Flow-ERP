@@ -110,7 +110,7 @@ export function ReportsPage() {
       <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
         <div className="flex-1 overflow-auto">
           <table className="erp-table">
-            <thead>
+            <thead className="sticky top-0 bg-white z-10 shadow-sm">
               <tr>
                 <th>{isWeeklyCustomer ? 'Customer' : 'Label'}</th>
                 {isWeeklyCustomer ? (

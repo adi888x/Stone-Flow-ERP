@@ -51,7 +51,7 @@ export function RatesPage() {
       <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
         <div className="flex-1 overflow-auto">
         <table className="erp-table">
-          <thead><tr><th>Customer</th><th>Material</th><th>Rate / BRASS</th><th>Effective From</th><th>Effective To</th><th>Status</th></tr></thead>
+          <thead className="sticky top-0 bg-white z-10 shadow-sm"><tr><th>Customer</th><th>Material</th><th>Rate / BRASS</th><th>Effective From</th><th>Effective To</th><th>Status</th></tr></thead>
           <tbody>
             {filtered.map(r => {
               const customer = store.customers.find(c => c.id === r.customer_id);

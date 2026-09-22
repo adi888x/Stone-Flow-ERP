@@ -44,7 +44,7 @@ export function SuppliersPage() {
       <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
         <div className="flex-1 overflow-auto">
           <table className="erp-table">
-            <thead><tr><th>Supplier</th><th>Mobile</th><th>Vehicles</th><th>Total Purchases</th><th>Total Qty (BRASS)</th><th>Outstanding</th><th>Status</th><th>Actions</th></tr></thead>
+            <thead className="sticky top-0 bg-white z-10 shadow-sm"><tr><th>Supplier</th><th>Mobile</th><th>Vehicles</th><th>Total Purchases</th><th>Total Qty (BRASS)</th><th>Outstanding</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody>
               {filtered.map(s => {
                 const purchases = store.purchases.filter(p => p.supplier_id === s.id && p.transaction_state === 'FULFILLED');

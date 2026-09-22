@@ -52,7 +52,7 @@ export function VehiclesPage() {
       <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
         <div className="flex-1 overflow-auto">
           <table className="erp-table">
-            <thead><tr><th>Vehicle No.</th><th>Type</th><th>Owner</th><th>Customer/Supplier</th><th>Driver</th><th>Mobile</th><th>Capacity</th><th>Status</th></tr></thead>
+            <thead className="sticky top-0 bg-white z-10 shadow-sm"><tr><th>Vehicle No.</th><th>Type</th><th>Owner</th><th>Customer/Supplier</th><th>Driver</th><th>Mobile</th><th>Capacity</th><th>Status</th></tr></thead>
             <tbody>
               {filtered.map(v => {
                 const customer = store.customers.find(c => c.id === v.customer_id);

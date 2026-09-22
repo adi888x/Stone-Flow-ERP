@@ -30,7 +30,7 @@ export function UsersPage() {
       <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
         <div className="flex-1 overflow-auto">
         <table className="erp-table">
-          <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Status</th><th>Created</th></tr></thead>
+          <thead className="sticky top-0 bg-white z-10 shadow-sm"><tr><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Status</th><th>Created</th></tr></thead>
           <tbody>
             {store.users.map(u => (
               <tr key={u.id}>

@@ -29,7 +29,7 @@ export function MaterialsPage() {
       <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
         <div className="flex-1 overflow-auto">
         <table className="erp-table">
-          <thead><tr><th>Material</th><th>Category</th><th>Unit</th><th>Description</th><th>Status</th></tr></thead>
+          <thead className="sticky top-0 bg-white z-10 shadow-sm"><tr><th>Material</th><th>Category</th><th>Unit</th><th>Description</th><th>Status</th></tr></thead>
           <tbody>
             {store.materials.map(m => (
               <tr key={m.id}>

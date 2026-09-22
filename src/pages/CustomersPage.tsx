@@ -66,7 +66,7 @@ export function CustomersPage() {
       <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
         <div className="flex-1 overflow-auto">
           <table className="erp-table">
-            <thead><tr><th>Customer</th><th>Mobile</th><th>Vehicles</th><th>Total Sales</th><th>Total Qty (BRASS)</th><th>Outstanding</th><th>Status</th><th>Actions</th></tr></thead>
+            <thead className="sticky top-0 bg-white z-10 shadow-sm"><tr><th>Customer</th><th>Mobile</th><th>Vehicles</th><th>Total Sales</th><th>Total Qty (BRASS)</th><th>Outstanding</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody>
               {filtered.map(c => {
                 const sales = store.sales.filter(s => s.customer_id === c.id && s.transaction_state === 'FULFILLED');
