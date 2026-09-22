@@ -24,7 +24,9 @@ export function SalesPage() {
   const [dateFilter, setDateFilter] = useState('today');
   const [paperSize, setPaperSize] = useState<PaperSize>('80mm');
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [menuPosition, setMenuPosition] = useState<'top' | 'bottom'>('bottom');
   const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -176,54 +178,56 @@ export function SalesPage() {
   };
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-bold text-slate-800">Sales</h1>
-          <p className="text-sm text-slate-500">Manage sale slips and outward transactions</p>
-        </div>
-        <button
-          onClick={() => { setShowForm(true); resetForm(); }}
-          disabled={store.isDemoMode}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white rounded-lg text-sm font-medium transition-colors"
-        >
-          <Plus size={16} /> New Sale
-        </button>
-      </div>
-
-      {success && <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">{success}</div>}
-
-      {/* Filters */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4">
-        <div className="flex flex-wrap gap-3">
-          <div className="relative flex-1 min-w-[200px]">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search by customer or slip no..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm"
-            />
+    <div className="flex flex-col h-full">
+      {/* Header - Fixed */}
+      <div className="flex-shrink-0 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <h1 className="text-xl font-bold text-slate-800">Sales</h1>
+            <p className="text-sm text-slate-500">Manage sale slips and outward transactions</p>
           </div>
-          <select value={dateFilter} onChange={e => setDateFilter(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm">
-            <option value="today">Today's Sales</option>
-            <option value="yesterday">Yesterday's Sales</option>
-            <option value="week">This Week</option>
-            <option value="month">This Month</option>
-          </select>
-          <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm">
-            <option value="">All Status</option>
-            <option value="FULFILLED">Fulfilled</option>
-            <option value="CANCELLED">Cancelled</option>
-          </select>
+          <button
+            onClick={() => { setShowForm(true); resetForm(); }}
+            disabled={store.isDemoMode}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white rounded-lg text-sm font-medium transition-colors"
+          >
+            <Plus size={16} /> New Sale
+          </button>
+        </div>
+
+        {success && <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">{success}</div>}
+
+        {/* Filters - Fixed */}
+        <div className="bg-white rounded-xl border border-slate-200 p-4">
+          <div className="flex flex-wrap gap-3">
+            <div className="relative flex-1 min-w-[200px]">
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search by customer or slip no..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm"
+              />
+            </div>
+            <select value={dateFilter} onChange={e => setDateFilter(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm">
+              <option value="today">Today's Sales</option>
+              <option value="yesterday">Yesterday's Sales</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+            </select>
+            <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm">
+              <option value="">All Status</option>
+              <option value="FULFILLED">Fulfilled</option>
+              <option value="CANCELLED">Cancelled</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <div className="overflow-x-auto">
+      {/* Table - Scrollable */}
+      <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
+        <div className="flex-1 overflow-auto">
           <table className="erp-table text-base">
             <thead>
               <tr>
@@ -264,13 +268,26 @@ export function SalesPage() {
                     <td className="relative">
                       <div ref={openMenu === sale.id ? menuRef : null} className="relative">
                         <button 
-                          onClick={() => setOpenMenu(openMenu === sale.id ? null : sale.id)}
+                          ref={el => buttonRefs.current[sale.id] = el}
+                          onClick={(e) => {
+                            if (openMenu === sale.id) {
+                              setOpenMenu(null);
+                            } else {
+                              const button = e.currentTarget;
+                              const rect = button.getBoundingClientRect();
+                              const spaceBelow = window.innerHeight - rect.bottom;
+                              setMenuPosition(spaceBelow < 200 ? 'top' : 'bottom');
+                              setOpenMenu(sale.id);
+                            }
+                          }}
                           className="p-1.5 hover:bg-slate-100 rounded"
                         >
                           <MoreVertical size={16} />
                         </button>
                         {openMenu === sale.id && (
-                          <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-[9999]">
+                          <div className={`absolute right-0 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-[9999] ${
+                            menuPosition === 'top' ? 'bottom-full mb-1' : 'top-full mt-1'
+                          }`}>
                             <button 
                               onClick={() => { setPreviewSale(sale); setShowPreview(true); setOpenMenu(null); }}
                               className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 flex items-center gap-2"

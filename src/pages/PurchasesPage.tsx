@@ -28,7 +28,9 @@ export function PurchasesPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [menuPosition, setMenuPosition] = useState<'top' | 'bottom'>('bottom');
   const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -93,28 +95,33 @@ export function PurchasesPage() {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-bold text-slate-800">Raw Material Inward / Purchase</h1>
-          <p className="text-sm text-slate-500">Manage purchase slips for raw materials</p>
+    <div className="flex flex-col h-full">
+      {/* Header - Fixed */}
+      <div className="flex-shrink-0 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <h1 className="text-xl font-bold text-slate-800">Raw Material Inward / Purchase</h1>
+            <p className="text-sm text-slate-500">Manage purchase slips for raw materials</p>
+          </div>
+          <button onClick={() => setShowForm(true)} disabled={store.isDemoMode} className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white rounded-lg text-sm font-medium">
+            <Plus size={16} /> New Purchase
+          </button>
         </div>
-        <button onClick={() => setShowForm(true)} disabled={store.isDemoMode} className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white rounded-lg text-sm font-medium">
-          <Plus size={16} /> New Purchase
-        </button>
+
+        {success && <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">{success}</div>}
+
+        {/* Filters - Fixed */}
+        <div className="bg-white rounded-xl border border-slate-200 p-4">
+          <div className="relative">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input type="text" placeholder="Search by supplier or slip no..." value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm" />
+          </div>
+        </div>
       </div>
 
-      {success && <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">{success}</div>}
-
-      <div className="bg-white rounded-xl border border-slate-200 p-4">
-        <div className="relative">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input type="text" placeholder="Search by supplier or slip no..." value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm" />
-        </div>
-      </div>
-
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <div className="overflow-x-auto">
+      {/* Table - Scrollable */}
+      <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
+        <div className="flex-1 overflow-auto">
           <table className="erp-table text-base">
             <thead>
               <tr>
@@ -142,13 +149,25 @@ export function PurchasesPage() {
                     <td className="relative">
                       <div ref={openMenu === p.id ? menuRef : null} className="relative">
                         <button 
-                          onClick={() => setOpenMenu(openMenu === p.id ? null : p.id)}
+                          onClick={(e) => {
+                            if (openMenu === p.id) {
+                              setOpenMenu(null);
+                            } else {
+                              const button = e.currentTarget;
+                              const rect = button.getBoundingClientRect();
+                              const spaceBelow = window.innerHeight - rect.bottom;
+                              setMenuPosition(spaceBelow < 200 ? 'top' : 'bottom');
+                              setOpenMenu(p.id);
+                            }
+                          }}
                           className="p-1.5 hover:bg-slate-100 rounded"
                         >
                           <MoreVertical size={16} />
                         </button>
                         {openMenu === p.id && (
-                          <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-[9999]">
+                          <div className={`absolute right-0 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-[9999] ${
+                            menuPosition === 'top' ? 'bottom-full mb-1' : 'top-full mt-1'
+                          }`}>
                             <button 
                               onClick={() => { setPreviewPurchase(p); setShowPreview(true); setOpenMenu(null); }}
                               className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 flex items-center gap-2"
