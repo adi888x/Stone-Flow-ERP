@@ -33,33 +33,39 @@ export function LoginPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {loading ? (
-          // Skeleton loading state
-          <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
-            {/* Logo skeleton */}
-            <div className="flex flex-col items-center mb-8">
-              <div className="skeleton-dark w-16 h-16 rounded-2xl mb-4" />
-              <div className="skeleton-dark w-48 h-6 rounded mb-2" />
-              <div className="skeleton-dark w-32 h-4 rounded" />
+          // Skeleton loading state - matches login form layout
+          <div className="animate-[fadeIn_0.3s_ease-out]">
+            {/* Title skeleton */}
+            <div className="text-center mb-8">
+              <div className="skeleton-dark w-56 h-7 rounded mx-auto mb-2" />
+              <div className="skeleton-dark w-44 h-4 rounded mx-auto" />
             </div>
 
-            {/* Form skeleton */}
-            <div className="space-y-4">
-              <div>
-                <div className="skeleton-dark w-16 h-3 rounded mb-2" />
-                <div className="skeleton-dark w-full h-11 rounded-lg" />
+            {/* Card skeleton */}
+            <div className="bg-white rounded-2xl shadow-2xl p-8">
+              {/* Sign In heading */}
+              <div className="skeleton w-20 h-6 rounded mb-6" />
+
+              {/* Email field */}
+              <div className="space-y-4">
+                <div>
+                  <div className="skeleton w-12 h-3 rounded mb-2" />
+                  <div className="skeleton w-full h-11 rounded-lg" />
+                </div>
+
+                {/* Password field */}
+                <div>
+                  <div className="skeleton w-16 h-3 rounded mb-2" />
+                  <div className="skeleton w-full h-11 rounded-lg" />
+                </div>
+
+                {/* Login button */}
+                <div className="skeleton w-full h-11 rounded-lg" />
               </div>
-              <div>
-                <div className="skeleton-dark w-20 h-3 rounded mb-2" />
-                <div className="skeleton-dark w-full h-11 rounded-lg" />
-              </div>
-              <div className="skeleton-dark w-full h-11 rounded-lg" />
             </div>
 
-            {/* Demo button skeleton */}
-            <div className="mt-4 pt-4 border-t border-white/10">
-              <div className="skeleton-dark w-full h-11 rounded-lg" />
-              <div className="skeleton-dark w-48 h-3 rounded mx-auto mt-3" />
-            </div>
+            {/* Footer skeleton */}
+            <div className="skeleton-dark w-48 h-3 rounded mx-auto mt-6" />
           </div>
         ) : (
           // Actual login form
