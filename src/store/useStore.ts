@@ -92,7 +92,7 @@ for (let i = 0; i < 25; i++) {
     created_by: 'Counter-01',
     created_at: d.toISOString(),
     updated_at: d.toISOString(),
-    transaction_state: 'ACTIVE',
+    transaction_state: 'FULFILLED',
     print_count: 1,
     first_printed_at: d.toISOString(),
     last_printed_at: d.toISOString(),
@@ -127,17 +127,17 @@ for (let i = 0; i < 15; i++) {
     created_by: 'Counter-01',
     created_at: d.toISOString(),
     updated_at: d.toISOString(),
-    transaction_state: 'ACTIVE',
+    transaction_state: 'FULFILLED',
     print_count: 1,
   });
 }
 
 const DEMO_EXPENSES: Expense[] = [
-  { id: 'e1', expense_number: 'EXP-2026-000001', date: today(), time: timeNow(), category: 'Machine Repair', description_of_work: 'Conveyor belt replacement', work_area: 'Plant Area A', vendor_or_person: 'Mechanic Ramesh', paid_by: 'Admin', payment_mode: 'Cash', amount: 15000, created_by: 'Admin', created_at: now(), updated_at: now(), transaction_state: 'ACTIVE' },
-  { id: 'e2', expense_number: 'EXP-2026-000002', date: today(), time: timeNow(), category: 'Fuel', description_of_work: 'Diesel for loader', work_area: 'Plant', vendor_or_person: 'HP Petrol Pump', paid_by: 'Admin', payment_mode: 'UPI', amount: 8500, created_by: 'Admin', created_at: now(), updated_at: now(), transaction_state: 'ACTIVE' },
-  { id: 'e3', expense_number: 'EXP-2026-000003', date: today(), time: timeNow(), category: 'Electrical', description_of_work: 'Motor rewinding', work_area: 'Washing Unit', vendor_or_person: 'Electrician Suresh', paid_by: 'Admin', payment_mode: 'Cash', amount: 12000, created_by: 'Admin', created_at: now(), updated_at: now(), transaction_state: 'ACTIVE' },
-  { id: 'e4', expense_number: 'EXP-2026-000004', date: today(), time: timeNow(), category: 'Labour', description_of_work: 'Daily labour wages', work_area: 'Loading Area', vendor_or_person: 'Labour Contractor', paid_by: 'Manager', payment_mode: 'Cash', amount: 5000, created_by: 'Manager', created_at: now(), updated_at: now(), transaction_state: 'ACTIVE' },
-  { id: 'e5', expense_number: 'EXP-2026-000005', date: today(), time: timeNow(), category: 'Spare Parts', description_of_work: 'Bearings and seals', work_area: 'Screen Unit', vendor_or_person: 'SKF Bearings', paid_by: 'Admin', payment_mode: 'Bank Transfer', amount: 7500, created_by: 'Admin', created_at: now(), updated_at: now(), transaction_state: 'ACTIVE' },
+  { id: 'e1', expense_number: 'EXP-2026-000001', date: today(), time: timeNow(), category: 'Machine Repair', description_of_work: 'Conveyor belt replacement', work_area: 'Plant Area A', vendor_or_person: 'Mechanic Ramesh', paid_by: 'Admin', payment_mode: 'Cash', amount: 15000, created_by: 'Admin', created_at: now(), updated_at: now(), transaction_state: 'FULFILLED' },
+  { id: 'e2', expense_number: 'EXP-2026-000002', date: today(), time: timeNow(), category: 'Fuel', description_of_work: 'Diesel for loader', work_area: 'Plant', vendor_or_person: 'HP Petrol Pump', paid_by: 'Admin', payment_mode: 'UPI', amount: 8500, created_by: 'Admin', created_at: now(), updated_at: now(), transaction_state: 'FULFILLED' },
+  { id: 'e3', expense_number: 'EXP-2026-000003', date: today(), time: timeNow(), category: 'Electrical', description_of_work: 'Motor rewinding', work_area: 'Washing Unit', vendor_or_person: 'Electrician Suresh', paid_by: 'Admin', payment_mode: 'Cash', amount: 12000, created_by: 'Admin', created_at: now(), updated_at: now(), transaction_state: 'FULFILLED' },
+  { id: 'e4', expense_number: 'EXP-2026-000004', date: today(), time: timeNow(), category: 'Labour', description_of_work: 'Daily labour wages', work_area: 'Loading Area', vendor_or_person: 'Labour Contractor', paid_by: 'Manager', payment_mode: 'Cash', amount: 5000, created_by: 'Manager', created_at: now(), updated_at: now(), transaction_state: 'FULFILLED' },
+  { id: 'e5', expense_number: 'EXP-2026-000005', date: today(), time: timeNow(), category: 'Spare Parts', description_of_work: 'Bearings and seals', work_area: 'Screen Unit', vendor_or_person: 'SKF Bearings', paid_by: 'Admin', payment_mode: 'Bank Transfer', amount: 7500, created_by: 'Admin', created_at: now(), updated_at: now(), transaction_state: 'FULFILLED' },
 ];
 
 const DEMO_CUSTOMER_PAYMENTS: CustomerPayment[] = [
@@ -291,7 +291,7 @@ export function useStore() {
       sale_slip_number: slipNum,
       created_at: now(),
       updated_at: now(),
-      transaction_state: 'ACTIVE',
+      transaction_state: 'FULFILLED',
       print_count: 0,
     };
     setSales(prev => [s, ...prev]);
@@ -313,7 +313,7 @@ export function useStore() {
       purchase_slip_number: slipNum,
       created_at: now(),
       updated_at: now(),
-      transaction_state: 'ACTIVE',
+      transaction_state: 'FULFILLED',
       print_count: 0,
     };
     setPurchases(prev => [p, ...prev]);
@@ -330,7 +330,7 @@ export function useStore() {
       expense_number: num,
       created_at: now(),
       updated_at: now(),
-      transaction_state: 'ACTIVE',
+      transaction_state: 'FULFILLED',
     };
     setExpenses(prev => [e, ...prev]);
     addAuditLog('CREATE', 'Expense', e.id, undefined, { amount: e.amount });
@@ -356,13 +356,13 @@ export function useStore() {
 
   // Computed values
   const getCustomerOutstanding = useCallback((customerId: string) => {
-    const totalSales = sales.filter(s => s.customer_id === customerId && s.transaction_state === 'ACTIVE').reduce((sum, s) => sum + s.total_amount, 0);
+    const totalSales = sales.filter(s => s.customer_id === customerId && s.transaction_state === 'FULFILLED').reduce((sum, s) => sum + s.total_amount, 0);
     const totalPayments = customerPayments.filter(p => p.customer_id === customerId).reduce((sum, p) => sum + p.amount, 0);
     return totalSales - totalPayments;
   }, [sales, customerPayments]);
 
   const getSupplierOutstanding = useCallback((supplierId: string) => {
-    const totalPurchases = purchases.filter(p => p.supplier_id === supplierId && p.transaction_state === 'ACTIVE').reduce((sum, p) => sum + p.total_amount, 0);
+    const totalPurchases = purchases.filter(p => p.supplier_id === supplierId && p.transaction_state === 'FULFILLED').reduce((sum, p) => sum + p.total_amount, 0);
     const totalPayments = supplierPayments.filter(p => p.supplier_id === supplierId).reduce((sum, p) => sum + p.amount, 0);
     return totalPurchases - totalPayments;
   }, [purchases, supplierPayments]);

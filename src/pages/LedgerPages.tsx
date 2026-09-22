@@ -13,7 +13,7 @@ export function CustomerLedgerPage() {
     if (!selectedCustomer) return [];
     const entries: any[] = [];
     // Add sales
-    store.sales.filter(s => s.customer_id === selectedCustomer && s.transaction_state === 'ACTIVE').forEach(s => {
+    store.sales.filter(s => s.customer_id === selectedCustomer && s.transaction_state === 'FULFILLED').forEach(s => {
       const vehicle = store.vehicles.find(v => v.id === s.vehicle_id);
       const material = store.materials.find(m => m.id === s.material_id);
       entries.push({ date: s.date, reference_no: s.sale_slip_number, type: 'Sale' as const, description: `Sale - ${material?.material_name}`, vehicle: vehicle?.vehicle_number, material: material?.material_name, qty_brass: s.quantity_brass, debit: s.total_amount, credit: 0 });
@@ -98,7 +98,7 @@ export function SupplierLedgerPage() {
   const ledger = useMemo(() => {
     if (!selectedSupplier) return [];
     const entries: any[] = [];
-    store.purchases.filter(p => p.supplier_id === selectedSupplier && p.transaction_state === 'ACTIVE').forEach(p => {
+    store.purchases.filter(p => p.supplier_id === selectedSupplier && p.transaction_state === 'FULFILLED').forEach(p => {
       const vehicle = store.vehicles.find(v => v.id === p.vehicle_id);
       const material = store.materials.find(m => m.id === p.material_id);
       entries.push({ date: p.date, reference_no: p.purchase_slip_number, type: 'Purchase' as const, description: `Purchase - ${material?.material_name}`, vehicle: vehicle?.vehicle_number, material: material?.material_name, qty_brass: p.quantity_brass, debit: p.total_amount, credit: 0 });

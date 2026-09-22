@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useStoreContext } from '../App';
-import { Plus, Search, X } from 'lucide-react';
+import { Plus, Search, X, MoreVertical, Edit } from 'lucide-react';
 
 function formatCurrency(n: number) { return '₹' + n.toLocaleString('en-IN'); }
 
@@ -22,12 +22,13 @@ export function ExpensesPage() {
   const [notes, setNotes] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     return store.expenses.filter(e => {
       const matchSearch = !search || e.description_of_work.toLowerCase().includes(search.toLowerCase()) || e.vendor_or_person.toLowerCase().includes(search.toLowerCase()) || e.expense_number.toLowerCase().includes(search.toLowerCase());
       const matchCategory = !categoryFilter || e.category === categoryFilter;
-      return matchSearch && matchCategory && e.transaction_state === 'ACTIVE';
+      return matchSearch && matchCategory && e.transaction_state === 'FULFILLED';
     });
   }, [store.expenses, search, categoryFilter]);
 

@@ -12,9 +12,9 @@ export function ReportsPage() {
   const [dateTo, setDateTo] = useState('');
 
   const reportData = useMemo((): any[] => {
-    const activeSales = store.sales.filter(s => s.transaction_state === 'ACTIVE' && (!dateFrom || s.date >= dateFrom) && (!dateTo || s.date <= dateTo));
-    const activePurchases = store.purchases.filter(p => p.transaction_state === 'ACTIVE' && (!dateFrom || p.date >= dateFrom) && (!dateTo || p.date <= dateTo));
-    const activeExpenses = store.expenses.filter(e => e.transaction_state === 'ACTIVE' && (!dateFrom || e.date >= dateFrom) && (!dateTo || e.date <= dateTo));
+    const activeSales = store.sales.filter(s => s.transaction_state === 'FULFILLED' && (!dateFrom || s.date >= dateFrom) && (!dateTo || s.date <= dateTo));
+    const activePurchases = store.purchases.filter(p => p.transaction_state === 'FULFILLED' && (!dateFrom || p.date >= dateFrom) && (!dateTo || p.date <= dateTo));
+    const activeExpenses = store.expenses.filter(e => e.transaction_state === 'FULFILLED' && (!dateFrom || e.date >= dateFrom) && (!dateTo || e.date <= dateTo));
 
     switch (reportType) {
       case 'sales-daily': {

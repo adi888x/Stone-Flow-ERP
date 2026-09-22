@@ -20,9 +20,9 @@ export function Dashboard() {
   const startDate = dateRange === 'today' ? today : dateRange === 'week' ? weekAgo : monthAgo;
 
   const stats = useMemo(() => {
-    const activeSales = store.sales.filter(s => s.transaction_state === 'ACTIVE' && s.date >= startDate);
-    const activePurchases = store.purchases.filter(p => p.transaction_state === 'ACTIVE' && p.date >= startDate);
-    const activeExpenses = store.expenses.filter(e => e.transaction_state === 'ACTIVE' && e.date >= startDate);
+    const activeSales = store.sales.filter(s => s.transaction_state === 'FULFILLED' && s.date >= startDate);
+    const activePurchases = store.purchases.filter(p => p.transaction_state === 'FULFILLED' && p.date >= startDate);
+    const activeExpenses = store.expenses.filter(e => e.transaction_state === 'FULFILLED' && e.date >= startDate);
     const custPayments = store.customerPayments.filter(p => p.date >= startDate);
     const supPayments = store.supplierPayments.filter(p => p.date >= startDate);
 
@@ -79,7 +79,7 @@ export function Dashboard() {
 
   const expenseByCategory = useMemo(() => {
     const map: Record<string, number> = {};
-    store.expenses.filter(e => e.transaction_state === 'ACTIVE' && e.date >= startDate).forEach(e => {
+    store.expenses.filter(e => e.transaction_state === 'FULFILLED' && e.date >= startDate).forEach(e => {
       map[e.category] = (map[e.category] || 0) + e.amount;
     });
     return Object.entries(map).map(([name, value]) => ({ name, value }));
@@ -235,7 +235,7 @@ export function Dashboard() {
                     <td className="font-medium">{formatCurrency(sale.total_amount)}</td>
                     <td>
                       <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
-                        sale.transaction_state === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                        sale.transaction_state === 'FULFILLED' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                       }`}>
                         {sale.transaction_state}
                       </span>

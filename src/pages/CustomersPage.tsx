@@ -30,7 +30,7 @@ export function CustomersPage() {
   };
 
   const customerDetail = selectedCustomer ? store.customers.find(c => c.id === selectedCustomer) : null;
-  const customerSales = selectedCustomer ? store.sales.filter(s => s.customer_id === selectedCustomer && s.transaction_state === 'ACTIVE') : [];
+  const customerSales = selectedCustomer ? store.sales.filter(s => s.customer_id === selectedCustomer && s.transaction_state === 'FULFILLED') : [];
   const customerPayments = selectedCustomer ? store.customerPayments.filter(p => p.customer_id === selectedCustomer) : [];
   const customerVehicles = selectedCustomer ? store.vehicles.filter(v => v.customer_id === selectedCustomer) : [];
   const outstanding = selectedCustomer ? store.getCustomerOutstanding(selectedCustomer) : 0;
@@ -65,7 +65,7 @@ export function CustomersPage() {
             <thead><tr><th>Customer</th><th>Mobile</th><th>Vehicles</th><th>Total Sales</th><th>Total Qty (BRASS)</th><th>Outstanding</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody>
               {filtered.map(c => {
-                const sales = store.sales.filter(s => s.customer_id === c.id && s.transaction_state === 'ACTIVE');
+                const sales = store.sales.filter(s => s.customer_id === c.id && s.transaction_state === 'FULFILLED');
                 const totalSales = sales.reduce((s, x) => s + x.total_amount, 0);
                 const totalQty = sales.reduce((s, x) => s + x.quantity_brass, 0);
                 const vehicles = store.vehicles.filter(v => v.customer_id === c.id).length;

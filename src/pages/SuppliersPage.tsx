@@ -22,7 +22,7 @@ export function SuppliersPage() {
   };
 
   const supplierDetail = selectedSupplier ? store.suppliers.find(s => s.id === selectedSupplier) : null;
-  const supplierPurchases = selectedSupplier ? store.purchases.filter(p => p.supplier_id === selectedSupplier && p.transaction_state === 'ACTIVE') : [];
+  const supplierPurchases = selectedSupplier ? store.purchases.filter(p => p.supplier_id === selectedSupplier && p.transaction_state === 'FULFILLED') : [];
   const supplierPayments = selectedSupplier ? store.supplierPayments.filter(p => p.supplier_id === selectedSupplier) : [];
   const supplierVehicles = selectedSupplier ? store.vehicles.filter(v => v.supplier_id === selectedSupplier) : [];
   const outstanding = selectedSupplier ? store.getSupplierOutstanding(selectedSupplier) : 0;
@@ -42,7 +42,7 @@ export function SuppliersPage() {
             <thead><tr><th>Supplier</th><th>Mobile</th><th>Vehicles</th><th>Total Purchases</th><th>Total Qty (BRASS)</th><th>Outstanding</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody>
               {filtered.map(s => {
-                const purchases = store.purchases.filter(p => p.supplier_id === s.id && p.transaction_state === 'ACTIVE');
+                const purchases = store.purchases.filter(p => p.supplier_id === s.id && p.transaction_state === 'FULFILLED');
                 const totalPurchases = purchases.reduce((sum, p) => sum + p.total_amount, 0);
                 const totalQty = purchases.reduce((sum, p) => sum + p.quantity_brass, 0);
                 const vehicles = store.vehicles.filter(v => v.supplier_id === s.id).length;

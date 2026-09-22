@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useStoreContext } from '../App';
-import { Plus, Search, Eye, X, Printer } from 'lucide-react';
+import { Plus, Search, Eye, X, Printer, MoreVertical } from 'lucide-react';
 
 function formatCurrency(n: number) { return '₹' + n.toLocaleString('en-IN'); }
 
@@ -18,6 +18,7 @@ export function PurchasesPage() {
   const [notes, setNotes] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
 
   const filteredPurchases = useMemo(() => {
     return store.purchases.filter(p => {
@@ -88,10 +89,10 @@ export function PurchasesPage() {
 
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="erp-table">
+          <table className="erp-table text-base">
             <thead>
               <tr>
-                <th>Date</th><th>Slip No.</th><th>Supplier</th><th>Vehicle</th><th>Material</th><th>Qty (BRASS)</th><th>Rate</th><th>Amount</th><th>Status</th><th>Actions</th>
+                <th>Date</th><th>Slip No.</th><th>Supplier</th><th>Vehicle</th><th>Material</th><th>Qty (BRASS)</th><th>Rate</th><th>Amount</th><th>Status</th><th></th>
               </tr>
             </thead>
             <tbody>
@@ -104,15 +105,45 @@ export function PurchasesPage() {
                 return (
                   <tr key={p.id}>
                     <td>{p.date}</td>
-                    <td className="font-mono text-xs">{p.purchase_slip_number}</td>
+                    <td className="font-mono text-sm">{p.purchase_slip_number}</td>
                     <td>{supplier?.supplier_name}</td>
-                    <td className="font-mono text-xs">{vehicle?.vehicle_number}</td>
+                    <td className="font-mono text-sm">{vehicle?.vehicle_number}</td>
                     <td>{material?.material_name}</td>
                     <td>{p.quantity_brass.toFixed(2)}</td>
                     <td>{formatCurrency(p.rate)}</td>
                     <td className="font-medium">{formatCurrency(p.total_amount)}</td>
-                    <td><span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${p.transaction_state === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{p.transaction_state}</span></td>
-                    <td><button onClick={() => { setPreviewPurchase(p); setShowPreview(true); }} className="p-1.5 hover:bg-blue-50 rounded text-blue-600"><Eye size={14} /></button></td>
+                    <td><span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${p.transaction_state === 'FULFILLED' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{p.transaction_state}</span></td>
+                    <td className="relative">
+                      <button 
+                        onClick={() => setOpenMenu(openMenu === p.id ? null : p.id)}
+                        className="p-1.5 hover:bg-slate-100 rounded"
+                      >
+                        <MoreVertical size={16} />
+                      </button>
+                      {openMenu === p.id && (
+                        <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-50">
+                          <button 
+                            onClick={() => { setPreviewPurchase(p); setShowPreview(true); setOpenMenu(null); }}
+                            className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 flex items-center gap-2"
+                          >
+                            <Eye size={14} /> Preview / Print
+                          </button>
+                          {p.transaction_state === 'FULFILLED' && store.currentUser?.role === 'ADMIN' && (
+                            <button 
+                              onClick={() => {
+                                if (confirm('Are you sure you want to cancel this purchase?')) {
+                                  // Add cancel purchase logic here
+                                  setOpenMenu(null);
+                                }
+                              }}
+                              className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                            >
+                              <X size={14} /> Cancel Purchase
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </td>
                   </tr>
                 );
               })}
@@ -120,7 +151,7 @@ export function PurchasesPage() {
           </table>
         </div>
         <div className="px-4 py-3 border-t border-slate-200 bg-slate-50 text-sm text-slate-600">
-          Showing {filteredPurchases.length} purchases | Total: {formatCurrency(filteredPurchases.reduce((s, x) => s + (x.transaction_state === 'ACTIVE' ? x.total_amount : 0), 0))}
+          Showing {filteredPurchases.length} purchases | Total: {formatCurrency(filteredPurchases.reduce((s, x) => s + (x.transaction_state === 'FULFILLED' ? x.total_amount : 0), 0))}
         </div>
       </div>
 

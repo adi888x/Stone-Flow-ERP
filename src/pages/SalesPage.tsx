@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useStoreContext } from '../App';
-import { Plus, Search, Printer, Eye, X, FileDown } from 'lucide-react';
+import { Plus, Search, Printer, Eye, X, MoreVertical } from 'lucide-react';
 import type { PaperSize } from '../types';
 
 function formatCurrency(n: number) { return '₹' + n.toLocaleString('en-IN'); }
@@ -12,7 +12,9 @@ export function SalesPage() {
   const [previewSale, setPreviewSale] = useState<any>(null);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [dateFilter, setDateFilter] = useState('today');
   const [paperSize, setPaperSize] = useState<PaperSize>('80mm');
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
 
   // Form state
   const [customerId, setCustomerId] = useState('');
@@ -24,14 +26,41 @@ export function SalesPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+  const getDateRange = () => {
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    
+    switch (dateFilter) {
+      case 'today':
+        return { start: todayStr, end: todayStr };
+      case 'yesterday':
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.toISOString().split('T')[0];
+        return { start: yesterdayStr, end: yesterdayStr };
+      case 'week':
+        const weekStart = new Date(today);
+        weekStart.setDate(weekStart.getDate() - 7);
+        return { start: weekStart.toISOString().split('T')[0], end: todayStr };
+      case 'month':
+        const monthStart = new Date(today);
+        monthStart.setMonth(monthStart.getMonth() - 1);
+        return { start: monthStart.toISOString().split('T')[0], end: todayStr };
+      default:
+        return { start: todayStr, end: todayStr };
+    }
+  };
+
   const filteredSales = useMemo(() => {
+    const { start, end } = getDateRange();
     return store.sales.filter(s => {
       const customer = store.customers.find(c => c.id === s.customer_id);
       const matchSearch = !search || customer?.customer_name.toLowerCase().includes(search.toLowerCase()) || s.sale_slip_number.toLowerCase().includes(search.toLowerCase());
       const matchStatus = !statusFilter || s.transaction_state === statusFilter;
-      return matchSearch && matchStatus;
+      const matchDate = s.date >= start && s.date <= end;
+      return matchSearch && matchStatus && matchDate;
     });
-  }, [store.sales, store.customers, search, statusFilter]);
+  }, [store.sales, store.customers, search, statusFilter, dateFilter]);
 
   const customerVehicles = useMemo(() => {
     if (!customerId) return [];
@@ -87,7 +116,6 @@ export function SalesPage() {
     if (!materialId) { setError('Material is required.'); return false; }
     if (!quantity || parseFloat(quantity) <= 0) { setError('Quantity must be greater than 0.'); return false; }
     if (!rate || parseFloat(rate) <= 0) { setError('Rate must be greater than 0.'); return false; }
-    // Verify vehicle belongs to customer
     const vehicle = store.vehicles.find(v => v.id === vehicleId);
     if (vehicle && vehicle.customer_id !== customerId) {
       setError('Vehicle does not belong to this customer.'); return false;
@@ -113,12 +141,20 @@ export function SalesPage() {
     setCustomerId(''); setVehicleId(''); setMaterialId(''); setQuantity(''); setRate(''); setNotes(''); setError('');
   };
 
+  const handleCancelSale = (saleId: string) => {
+    if (store.isDemoMode) return;
+    if (confirm('Are you sure you want to cancel this order?')) {
+      store.cancelSale(saleId, 'Cancelled by user');
+      setOpenMenu(null);
+    }
+  };
+
   return (
     <div className="space-y-4">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold text-slate-800">Sales / Outward</h1>
+          <h1 className="text-xl font-bold text-slate-800">Sales</h1>
           <p className="text-sm text-slate-500">Manage sale slips and outward transactions</p>
         </div>
         <button
@@ -145,11 +181,16 @@ export function SalesPage() {
               className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm"
             />
           </div>
+          <select value={dateFilter} onChange={e => setDateFilter(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm">
+            <option value="today">Today's Sales</option>
+            <option value="yesterday">Yesterday's Sales</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+          </select>
           <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm">
             <option value="">All Status</option>
-            <option value="ACTIVE">Active</option>
+            <option value="FULFILLED">Fulfilled</option>
             <option value="CANCELLED">Cancelled</option>
-            <option value="VOID">Void</option>
           </select>
         </div>
       </div>
@@ -157,7 +198,7 @@ export function SalesPage() {
       {/* Table */}
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="erp-table">
+          <table className="erp-table text-base">
             <thead>
               <tr>
                 <th>Date</th>
@@ -169,7 +210,7 @@ export function SalesPage() {
                 <th>Rate</th>
                 <th>Amount</th>
                 <th>Status</th>
-                <th>Actions</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -182,29 +223,43 @@ export function SalesPage() {
                 return (
                   <tr key={sale.id}>
                     <td>{sale.date}</td>
-                    <td className="font-mono text-xs">{sale.sale_slip_number}</td>
+                    <td className="font-mono text-sm">{sale.sale_slip_number}</td>
                     <td>{customer?.customer_name}</td>
-                    <td className="font-mono text-xs">{vehicle?.vehicle_number}</td>
+                    <td className="font-mono text-sm">{vehicle?.vehicle_number}</td>
                     <td>{material?.material_name}</td>
                     <td>{sale.quantity_brass.toFixed(2)}</td>
                     <td>{formatCurrency(sale.rate)}</td>
                     <td className="font-medium">{formatCurrency(sale.total_amount)}</td>
                     <td>
                       <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
-                        sale.transaction_state === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                        sale.transaction_state === 'FULFILLED' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                       }`}>{sale.transaction_state}</span>
                     </td>
-                    <td>
-                      <div className="flex gap-1">
-                        <button onClick={() => { setPreviewSale(sale); setShowPreview(true); }} className="p-1.5 hover:bg-blue-50 rounded text-blue-600" title="Preview/Print">
-                          <Eye size={14} />
-                        </button>
-                        {store.currentUser?.role === 'ADMIN' && sale.transaction_state === 'ACTIVE' && (
-                          <button onClick={() => { if (confirm('Cancel this sale?')) store.cancelSale(sale.id, 'Cancelled by admin'); }} className="p-1.5 hover:bg-red-50 rounded text-red-600" title="Cancel">
-                            <X size={14} />
+                    <td className="relative">
+                      <button 
+                        onClick={() => setOpenMenu(openMenu === sale.id ? null : sale.id)}
+                        className="p-1.5 hover:bg-slate-100 rounded"
+                      >
+                        <MoreVertical size={16} />
+                      </button>
+                      {openMenu === sale.id && (
+                        <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-50">
+                          <button 
+                            onClick={() => { setPreviewSale(sale); setShowPreview(true); setOpenMenu(null); }}
+                            className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 flex items-center gap-2"
+                          >
+                            <Eye size={14} /> Preview / Print
                           </button>
-                        )}
-                      </div>
+                          {sale.transaction_state === 'FULFILLED' && store.currentUser?.role === 'ADMIN' && (
+                            <button 
+                              onClick={() => handleCancelSale(sale.id)}
+                              className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                            >
+                              <X size={14} /> Cancel Order
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </td>
                   </tr>
                 );
@@ -213,7 +268,7 @@ export function SalesPage() {
           </table>
         </div>
         <div className="px-4 py-3 border-t border-slate-200 bg-slate-50 text-sm text-slate-600">
-          Showing {filteredSales.length} of {store.sales.length} sales | Total: {formatCurrency(filteredSales.reduce((s, x) => s + (x.transaction_state === 'ACTIVE' ? x.total_amount : 0), 0))}
+          Showing {filteredSales.length} of {store.sales.length} sales | Total: {formatCurrency(filteredSales.reduce((s, x) => s + (x.transaction_state === 'FULFILLED' ? x.total_amount : 0), 0))}
         </div>
       </div>
 
@@ -222,7 +277,7 @@ export function SalesPage() {
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-slide-in">
             <div className="p-5 border-b border-slate-200 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-slate-800">New Sale / Outward</h2>
+              <h2 className="text-lg font-bold text-slate-800">New Sale</h2>
               <button onClick={() => setShowForm(false)} className="p-1.5 hover:bg-slate-100 rounded"><X size={18} /></button>
             </div>
             <div className="p-5 space-y-4">
@@ -338,7 +393,7 @@ function ReceiptPreviewModal({ sale, store, paperSize, setPaperSize, onClose }: 
               <p className="font-bold text-sm">{settings.business_name}</p>
               <p className="text-xs">{settings.business_address}</p>
               <p className="text-xs">Ph: {settings.business_phone}</p>
-              <p className="font-bold text-xs mt-1">SALE / OUTWARD</p>
+              <p className="font-bold text-xs mt-1">SALE SLIP</p>
             </div>
 
             <div className="space-y-1 text-xs">
