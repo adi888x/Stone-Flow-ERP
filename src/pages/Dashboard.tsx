@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useStoreContext } from '../App';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { TrendingUp, TrendingDown, IndianRupee, Package, ShoppingCart, CreditCard, Truck } from 'lucide-react';
+import { TrendingUp, TrendingDown, IndianRupee, Package, ShoppingCart, CreditCard, Truck, Plus } from 'lucide-react';
 
 const COLORS = ['#3b82f6', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#f97316', '#ec4899'];
 
@@ -9,7 +9,15 @@ function formatCurrency(n: number) {
   return '₹' + n.toLocaleString('en-IN');
 }
 
-export function Dashboard() {
+type Page = 'dashboard' | 'sales' | 'purchases' | 'expenses' | 'customers' | 'suppliers' |
+  'vehicles' | 'materials' | 'rates' | 'customer-payments' | 'supplier-payments' |
+  'customer-ledger' | 'supplier-ledger' | 'reports' | 'users' | 'audit-logs' | 'settings';
+
+interface DashboardProps {
+  setCurrentPage: (page: Page) => void;
+}
+
+export function Dashboard({ setCurrentPage }: DashboardProps) {
   const store = useStoreContext();
   const [dateRange, setDateRange] = useState<'today' | 'week' | 'month' | 'custom'>('today');
 
@@ -117,6 +125,35 @@ export function Dashboard() {
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <button
+          onClick={() => setCurrentPage('sales')}
+          className="flex items-center gap-4 p-5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all group"
+        >
+          <div className="p-3 bg-white/20 rounded-lg group-hover:bg-white/30 transition-colors">
+            <Plus size={28} />
+          </div>
+          <div className="text-left">
+            <p className="text-lg font-bold">New Sale</p>
+            <p className="text-sm text-blue-100">Create a new sale entry</p>
+          </div>
+        </button>
+        
+        <button
+          onClick={() => setCurrentPage('purchases')}
+          className="flex items-center gap-4 p-5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all group"
+        >
+          <div className="p-3 bg-white/20 rounded-lg group-hover:bg-white/30 transition-colors">
+            <Plus size={28} />
+          </div>
+          <div className="text-left">
+            <p className="text-lg font-bold">New Purchase</p>
+            <p className="text-sm text-emerald-100">Create a new purchase entry</p>
+          </div>
+        </button>
       </div>
 
       {/* Stat Cards */}

@@ -40,7 +40,7 @@ export default function App() {
     if (!store.currentUser) return <LoginPage />;
     return (
       <Layout currentPage={currentPage} setCurrentPage={setCurrentPage}>
-        {currentPage === 'dashboard' && <Dashboard />}
+        {currentPage === 'dashboard' && <Dashboard setCurrentPage={setCurrentPage} />}
         {currentPage === 'sales' && <SalesPage />}
         {currentPage === 'purchases' && <PurchasesPage />}
         {currentPage === 'expenses' && <ExpensesPage />}
