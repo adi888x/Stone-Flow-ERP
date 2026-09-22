@@ -3,7 +3,7 @@ import { useStoreContext } from '../App';
 import {
   LayoutDashboard, ShoppingCart, Package, Receipt, Users, Truck,
   Boxes, IndianRupee, CreditCard, BookOpen, BarChart3, UserCog,
-  ClipboardList, Settings, Menu, X, LogOut, ChevronDown
+  ClipboardList, Settings, Menu, X, LogOut
 } from 'lucide-react';
 
 type Page = 'dashboard' | 'sales' | 'purchases' | 'expenses' | 'customers' | 'suppliers' |
@@ -39,7 +39,6 @@ const NAV_ITEMS: { id: Page; label: string; icon: React.ReactNode; roles: string
 export function Layout({ currentPage, setCurrentPage, children }: LayoutProps) {
   const store = useStoreContext();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const filteredNav = NAV_ITEMS.filter(item =>
     store.currentUser && item.roles.includes(store.currentUser.role)
@@ -107,34 +106,6 @@ export function Layout({ currentPage, setCurrentPage, children }: LayoutProps) {
 
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top bar */}
-        <header className="h-14 bg-white flex items-center px-4 gap-4 shrink-0">
-          <button className="lg:hidden p-2 hover:bg-slate-100 rounded" onClick={() => setSidebarOpen(true)}>
-            <Menu size={20} />
-          </button>
-          <div className="flex-1"></div>
-          <div className="relative">
-            <button
-              onClick={() => setUserMenuOpen(!userMenuOpen)}
-              className="flex items-center gap-2 px-3 py-1.5 hover:bg-slate-100 rounded-lg text-sm"
-            >
-              <span className="hidden sm:inline">{store.currentUser?.full_name}</span>
-              <ChevronDown size={14} />
-            </button>
-            {userMenuOpen && (
-              <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-50">
-                <div className="px-3 py-2 border-b border-slate-100">
-                  <p className="text-sm font-medium">{store.currentUser?.full_name}</p>
-                  <p className="text-xs text-slate-500">{store.currentUser?.email}</p>
-                </div>
-                <button onClick={() => { store.logout(); setUserMenuOpen(false); }} className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50">
-                  Sign Out
-                </button>
-              </div>
-            )}
-          </div>
-        </header>
-
         {/* Page content */}
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
           {children}
