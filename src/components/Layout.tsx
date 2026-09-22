@@ -18,7 +18,7 @@ interface LayoutProps {
 
 const NAV_ITEMS: { id: Page; label: string; icon: React.ReactNode; roles: string[] }[] = [
   { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} />, roles: ['ADMIN', 'COUNTER_OPERATOR', 'ACCOUNTANT', 'MANAGER'] },
-  { id: 'sales', label: 'Sales / Outward', icon: <ShoppingCart size={18} />, roles: ['ADMIN', 'COUNTER_OPERATOR', 'ACCOUNTANT', 'MANAGER'] },
+  { id: 'sales', label: 'Sales', icon: <ShoppingCart size={18} />, roles: ['ADMIN', 'COUNTER_OPERATOR', 'ACCOUNTANT', 'MANAGER'] },
   { id: 'purchases', label: 'Raw Material Inward', icon: <Package size={18} />, roles: ['ADMIN', 'COUNTER_OPERATOR', 'ACCOUNTANT'] },
   { id: 'expenses', label: 'Expenses', icon: <Receipt size={18} />, roles: ['ADMIN', 'ACCOUNTANT', 'MANAGER'] },
   { id: 'customer-payments', label: 'Customer Payments', icon: <CreditCard size={18} />, roles: ['ADMIN', 'ACCOUNTANT'] },
@@ -52,7 +52,7 @@ export function Layout({ currentPage, setCurrentPage, children }: LayoutProps) {
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex flex-col transform transition-transform duration-200 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-72 bg-slate-900 text-white flex flex-col transform transition-transform duration-200 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         {/* Logo */}
         <div className="p-4 border-b border-slate-700">
           <div className="flex items-center gap-3">
@@ -75,7 +75,7 @@ export function Layout({ currentPage, setCurrentPage, children }: LayoutProps) {
             <button
               key={item.id}
               onClick={() => { setCurrentPage(item.id); setSidebarOpen(false); }}
-              className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
+              className={`w-full flex items-center gap-3 px-4 py-3 text-base transition-colors ${
                 currentPage === item.id
                   ? 'bg-blue-600/20 text-blue-300 border-r-2 border-blue-400'
                   : 'text-slate-300 hover:bg-slate-800 hover:text-white'
