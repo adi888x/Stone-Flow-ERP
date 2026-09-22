@@ -1,6 +1,5 @@
-import React, { createContext, useContext, useState, useMemo, useCallback } from 'react';
+import React, { createContext, useContext, useState, useMemo } from 'react';
 import { useStore, type Store } from './store/useStore';
-import { SplashScreen } from './components/SplashScreen';
 import { LoginPage } from './pages/LoginPage';
 import { Dashboard } from './pages/Dashboard';
 import { SalesPage } from './pages/SalesPage';
@@ -36,11 +35,6 @@ type Page = 'dashboard' | 'sales' | 'purchases' | 'expenses' | 'customers' | 'su
 export default function App() {
   const store = useStore();
   const [currentPage, setCurrentPage] = useState<Page>('dashboard');
-  const [showSplash, setShowSplash] = useState(true);
-
-  const handleSplashComplete = useCallback(() => {
-    setShowSplash(false);
-  }, []);
 
   const content = useMemo(() => {
     if (!store.currentUser) return <LoginPage />;
@@ -69,10 +63,7 @@ export default function App() {
 
   return (
     <StoreContext.Provider value={store}>
-      {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
-      <div className={`transition-opacity duration-500 ${showSplash ? 'opacity-0' : 'opacity-100'}`}>
-        {content}
-      </div>
+      {content}
     </StoreContext.Provider>
   );
 }
