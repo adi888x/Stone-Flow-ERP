@@ -8,7 +8,7 @@ export function VehiclesPage() {
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [ownerFilter, setOwnerFilter] = useState<'all' | 'customer' | 'supplier'>('all');
-  const [form, setForm] = useState({ vehicle_number: '', vehicle_type: 'Tipper', owner_name: '', customer_id: '', supplier_id: '', driver_name: '', driver_mobile: '', capacity: '' });
+  const [form, setForm] = useState({ vehicle_number: '', vehicle_type: 'TIPPER', owner_name: '', customer_id: '', supplier_id: '', driver_name: '', driver_mobile: '', capacity: '' });
   const [error, setError] = useState('');
 
   const filtered = useMemo(() => {
@@ -30,7 +30,7 @@ export function VehiclesPage() {
     if (store.vehicles.some(v => v.vehicle_number === normalized && v.is_active)) { setError('This vehicle number already exists.'); return; }
     store.addVehicle({ ...form, vehicle_number: normalized, is_active: true, customer_id: form.customer_id || undefined, supplier_id: form.supplier_id || undefined });
     setShowForm(false);
-    setForm({ vehicle_number: '', vehicle_type: 'Tipper', owner_name: '', customer_id: '', supplier_id: '', driver_name: '', driver_mobile: '', capacity: '' });
+    setForm({ vehicle_number: '', vehicle_type: 'TIPPER', owner_name: '', customer_id: '', supplier_id: '', driver_name: '', driver_mobile: '', capacity: '' });
   };
 
   return (
@@ -41,7 +41,7 @@ export function VehiclesPage() {
       </div>
       <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[200px]"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" /><input type="text" placeholder="Search vehicles..." value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm" /></div>
-        <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm"><option value="">All Types</option><option value="Tipper">Tipper</option><option value="Truck">Truck</option><option value="Mini Truck">Mini Truck</option></select>
+        <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm"><option value="">All Types</option><option value="TIPPER">TIPPER</option><option value="HYVA">HYVA</option><option value="TEMPO">TEMPO</option><option value="RIKSHA">RIKSHA</option><option value="TRACTOR">TRACTOR</option></select>
         <select value={ownerFilter} onChange={e => setOwnerFilter(e.target.value as any)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm"><option value="all">All Owners</option><option value="customer">Customer</option><option value="supplier">Supplier</option></select>
       </div>
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
@@ -78,7 +78,7 @@ export function VehiclesPage() {
               {error && <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{error}</div>}
               <div className="grid grid-cols-2 gap-4">
                 <div><label className="block text-sm font-medium text-slate-700 mb-1">Vehicle Number *</label><input type="text" value={form.vehicle_number} onChange={e => setForm({ ...form, vehicle_number: e.target.value })} placeholder="MH16AB1234" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" /></div>
-                <div><label className="block text-sm font-medium text-slate-700 mb-1">Vehicle Type</label><select value={form.vehicle_type} onChange={e => setForm({ ...form, vehicle_type: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"><option>Tipper</option><option>Truck</option><option>Mini Truck</option></select></div>
+                <div><label className="block text-sm font-medium text-slate-700 mb-1">Vehicle Type</label><select value={form.vehicle_type} onChange={e => setForm({ ...form, vehicle_type: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"><option>TIPPER</option><option>HYVA</option><option>TEMPO</option><option>RIKSHA</option><option>TRACTOR</option></select></div>
               </div>
               <div><label className="block text-sm font-medium text-slate-700 mb-1">Owner Name</label><input type="text" value={form.owner_name} onChange={e => setForm({ ...form, owner_name: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" /></div>
               <div><label className="block text-sm font-medium text-slate-700 mb-1">Assign to Customer</label><select value={form.customer_id} onChange={e => setForm({ ...form, customer_id: e.target.value, supplier_id: '' })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"><option value="">None</option>{store.customers.filter(c => c.is_active).map(c => <option key={c.id} value={c.id}>{c.customer_name}</option>)}</select></div>

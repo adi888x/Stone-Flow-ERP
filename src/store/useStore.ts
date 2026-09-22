@@ -40,13 +40,13 @@ const DEMO_SUPPLIERS: Supplier[] = [
 ];
 
 const DEMO_VEHICLES: Vehicle[] = [
-  { id: 'v1', vehicle_number: 'MH16AB1234', vehicle_type: 'Tipper', owner_name: 'Rajesh Patil', customer_id: 'c1', driver_name: 'Ramesh', driver_mobile: '9876540001', capacity: '15 Brass', is_active: true, created_at: '2026-01-15', updated_at: '2026-01-15' },
-  { id: 'v2', vehicle_number: 'MH16CD5678', vehicle_type: 'Tipper', owner_name: 'Rajesh Patil', customer_id: 'c1', driver_name: 'Suresh', driver_mobile: '9876540002', capacity: '12 Brass', is_active: true, created_at: '2026-01-15', updated_at: '2026-01-15' },
-  { id: 'v3', vehicle_number: 'MH16XY9087', vehicle_type: 'Truck', owner_name: 'Suresh Sharma', customer_id: 'c2', driver_name: 'Mahesh', driver_mobile: '9876540003', capacity: '20 Brass', is_active: true, created_at: '2026-01-20', updated_at: '2026-01-20' },
-  { id: 'v4', vehicle_number: 'MH15PQ3456', vehicle_type: 'Tipper', owner_name: 'Amit Deshmukh', customer_id: 'c3', driver_name: 'Ganesh', driver_mobile: '9876540004', capacity: '10 Brass', is_active: true, created_at: '2026-02-01', updated_at: '2026-02-01' },
-  { id: 'v5', vehicle_number: 'MH14RS7890', vehicle_type: 'Truck', owner_name: 'Ganesh Pawar', supplier_id: 's1', driver_name: 'Balu', driver_mobile: '9876540005', capacity: '25 Brass', is_active: true, created_at: '2026-01-10', updated_at: '2026-01-10' },
-  { id: 'v6', vehicle_number: 'MH14TU2345', vehicle_type: 'Tipper', owner_name: 'Ravi Shinde', supplier_id: 's2', driver_name: 'Kiran', driver_mobile: '9876540006', capacity: '15 Brass', is_active: true, created_at: '2026-01-15', updated_at: '2026-01-15' },
-  { id: 'v7', vehicle_number: 'MH16VW6789', vehicle_type: 'Tipper', owner_name: 'Vikram Joshi', customer_id: 'c4', driver_name: 'Prakash', driver_mobile: '9876540007', capacity: '12 Brass', is_active: true, created_at: '2026-02-10', updated_at: '2026-02-10' },
+  { id: 'v1', vehicle_number: 'MH16AB1234', vehicle_type: 'TIPPER', owner_name: 'Rajesh Patil', customer_id: 'c1', driver_name: 'Ramesh', driver_mobile: '9876540001', capacity: '15 Brass', is_active: true, created_at: '2026-01-15', updated_at: '2026-01-15' },
+  { id: 'v2', vehicle_number: 'MH16CD5678', vehicle_type: 'HYVA', owner_name: 'Rajesh Patil', customer_id: 'c1', driver_name: 'Suresh', driver_mobile: '9876540002', capacity: '12 Brass', is_active: true, created_at: '2026-01-15', updated_at: '2026-01-15' },
+  { id: 'v3', vehicle_number: 'MH16XY9087', vehicle_type: 'TEMPO', owner_name: 'Suresh Sharma', customer_id: 'c2', driver_name: 'Mahesh', driver_mobile: '9876540003', capacity: '20 Brass', is_active: true, created_at: '2026-01-20', updated_at: '2026-01-20' },
+  { id: 'v4', vehicle_number: 'MH15PQ3456', vehicle_type: 'RIKSHA', owner_name: 'Amit Deshmukh', customer_id: 'c3', driver_name: 'Ganesh', driver_mobile: '9876540004', capacity: '10 Brass', is_active: true, created_at: '2026-02-01', updated_at: '2026-02-01' },
+  { id: 'v5', vehicle_number: 'MH14RS7890', vehicle_type: 'TRACTOR', owner_name: 'Ganesh Pawar', supplier_id: 's1', driver_name: 'Balu', driver_mobile: '9876540005', capacity: '25 Brass', is_active: true, created_at: '2026-01-10', updated_at: '2026-01-10' },
+  { id: 'v6', vehicle_number: 'MH14TU2345', vehicle_type: 'TIPPER', owner_name: 'Ravi Shinde', supplier_id: 's2', driver_name: 'Kiran', driver_mobile: '9876540006', capacity: '15 Brass', is_active: true, created_at: '2026-01-15', updated_at: '2026-01-15' },
+  { id: 'v7', vehicle_number: 'MH16VW6789', vehicle_type: 'HYVA', owner_name: 'Vikram Joshi', customer_id: 'c4', driver_name: 'Prakash', driver_mobile: '9876540007', capacity: '12 Brass', is_active: true, created_at: '2026-02-10', updated_at: '2026-02-10' },
 ];
 
 const DEMO_MATERIALS: Material[] = [
