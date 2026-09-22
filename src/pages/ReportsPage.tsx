@@ -75,16 +75,19 @@ export function ReportsPage() {
   const isWeeklyCustomer = reportType === 'weekly-customer';
 
   return (
-    <div className="space-y-4">
-      <div><h1 className="text-xl font-bold text-slate-800">Reports</h1><p className="text-sm text-slate-500">Business reports with export options</p></div>
-      <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap gap-3">
-        <select value={reportType} onChange={e => setReportType(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm min-w-[200px]">
-          {reportTypes.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
-        </select>
-        <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" />
-        <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" />
-        <button className="inline-flex items-center gap-1 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm"><FileDown size={14} /> Excel</button>
-        <button className="inline-flex items-center gap-1 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm"><FileDown size={14} /> PDF</button>
+    <div className="flex flex-col h-full">
+      {/* Header - Fixed */}
+      <div className="flex-shrink-0 space-y-4">
+        <div><h1 className="text-xl font-bold text-slate-800">Reports</h1><p className="text-sm text-slate-500">Business reports with export options</p></div>
+        <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap gap-3">
+          <select value={reportType} onChange={e => setReportType(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm min-w-[200px]">
+            {reportTypes.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
+          </select>
+          <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+          <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+          <button className="inline-flex items-center gap-1 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm"><FileDown size={14} /> Excel</button>
+          <button className="inline-flex items-center gap-1 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm"><FileDown size={14} /> PDF</button>
+        </div>
       </div>
 
       {/* Chart */}
@@ -103,9 +106,9 @@ export function ReportsPage() {
         </div>
       )}
 
-      {/* Table */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <div className="overflow-x-auto">
+      {/* Table - Scrollable */}
+      <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
+        <div className="flex-1 overflow-auto">
           <table className="erp-table">
             <thead>
               <tr>

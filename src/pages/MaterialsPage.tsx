@@ -16,12 +16,18 @@ export function MaterialsPage() {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div><h1 className="text-xl font-bold text-slate-800">Materials</h1><p className="text-sm text-slate-500">Manage materials and products</p></div>
-        <button onClick={() => setShowForm(true)} disabled={store.isDemoMode} className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white rounded-lg text-sm font-medium"><Plus size={16} /> Add Material</button>
+    <div className="flex flex-col h-full">
+      {/* Header - Fixed */}
+      <div className="flex-shrink-0 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div><h1 className="text-xl font-bold text-slate-800">Materials</h1><p className="text-sm text-slate-500">Manage materials and products</p></div>
+          <button onClick={() => setShowForm(true)} disabled={store.isDemoMode} className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white rounded-lg text-sm font-medium"><Plus size={16} /> Add Material</button>
+        </div>
       </div>
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+
+      {/* Table - Scrollable */}
+      <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
+        <div className="flex-1 overflow-auto">
         <table className="erp-table">
           <thead><tr><th>Material</th><th>Category</th><th>Unit</th><th>Description</th><th>Status</th></tr></thead>
           <tbody>
@@ -36,6 +42,7 @@ export function MaterialsPage() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
       {showForm && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">

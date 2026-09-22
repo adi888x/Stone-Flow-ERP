@@ -20,10 +20,15 @@ export function UsersPage() {
   };
 
   return (
-    <div className="space-y-4">
-      <div><h1 className="text-xl font-bold text-slate-800">Users</h1><p className="text-sm text-slate-500">Manage system users and roles</p></div>
+    <div className="flex flex-col h-full">
+      {/* Header - Fixed */}
+      <div className="flex-shrink-0 space-y-4">
+        <div><h1 className="text-xl font-bold text-slate-800">Users</h1><p className="text-sm text-slate-500">Manage system users and roles</p></div>
+      </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      {/* Table - Scrollable */}
+      <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
+        <div className="flex-1 overflow-auto">
         <table className="erp-table">
           <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Status</th><th>Created</th></tr></thead>
           <tbody>

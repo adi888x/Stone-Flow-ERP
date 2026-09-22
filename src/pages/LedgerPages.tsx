@@ -40,27 +40,31 @@ export function CustomerLedgerPage() {
   const customer = store.customers.find(c => c.id === selectedCustomer);
 
   return (
-    <div className="space-y-4">
-      <div><h1 className="text-xl font-bold text-slate-800">Customer Ledger</h1><p className="text-sm text-slate-500">View customer transaction history and running balance</p></div>
-      <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap gap-3">
-        <select value={selectedCustomer} onChange={e => setSelectedCustomer(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm min-w-[200px]">
-          <option value="">Select Customer</option>
-          {store.customers.filter(c => c.is_active).map(c => <option key={c.id} value={c.id}>{c.customer_name}</option>)}
-        </select>
-        <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" />
-        <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" />
-      </div>
-      {selectedCustomer && customer && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="p-3 bg-blue-50 rounded-lg text-center"><p className="text-lg font-bold text-blue-800">{filteredLedger.filter(e => e.type === 'Sale').length}</p><p className="text-xs text-blue-600">Sales</p></div>
-          <div className="p-3 bg-green-50 rounded-lg text-center"><p className="text-lg font-bold text-green-800">{formatCurrency(filteredLedger.reduce((s, e) => s + e.debit, 0))}</p><p className="text-xs text-green-600">Total Debit</p></div>
-          <div className="p-3 bg-emerald-50 rounded-lg text-center"><p className="text-lg font-bold text-emerald-800">{formatCurrency(filteredLedger.reduce((s, e) => s + e.credit, 0))}</p><p className="text-xs text-emerald-600">Total Credit</p></div>
-          <div className="p-3 bg-red-50 rounded-lg text-center"><p className="text-lg font-bold text-red-800">{formatCurrency(store.getCustomerOutstanding(selectedCustomer))}</p><p className="text-xs text-red-600">Outstanding</p></div>
+    <div className="flex flex-col h-full">
+      {/* Header - Fixed */}
+      <div className="flex-shrink-0 space-y-4">
+        <div><h1 className="text-xl font-bold text-slate-800">Customer Ledger</h1><p className="text-sm text-slate-500">View customer transaction history and running balance</p></div>
+        <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap gap-3">
+          <select value={selectedCustomer} onChange={e => setSelectedCustomer(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm min-w-[200px]">
+            <option value="">Select Customer</option>
+            {store.customers.filter(c => c.is_active).map(c => <option key={c.id} value={c.id}>{c.customer_name}</option>)}
+          </select>
+          <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+          <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" />
         </div>
-      )}
+        {selectedCustomer && customer && (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="p-3 bg-blue-50 rounded-lg text-center"><p className="text-lg font-bold text-blue-800">{filteredLedger.filter(e => e.type === 'Sale').length}</p><p className="text-xs text-blue-600">Sales</p></div>
+            <div className="p-3 bg-green-50 rounded-lg text-center"><p className="text-lg font-bold text-green-800">{formatCurrency(filteredLedger.reduce((s, e) => s + e.debit, 0))}</p><p className="text-xs text-green-600">Total Debit</p></div>
+            <div className="p-3 bg-emerald-50 rounded-lg text-center"><p className="text-lg font-bold text-emerald-800">{formatCurrency(filteredLedger.reduce((s, e) => s + e.credit, 0))}</p><p className="text-xs text-emerald-600">Total Credit</p></div>
+            <div className="p-3 bg-red-50 rounded-lg text-center"><p className="text-lg font-bold text-red-800">{formatCurrency(store.getCustomerOutstanding(selectedCustomer))}</p><p className="text-xs text-red-600">Outstanding</p></div>
+          </div>
+        )}
+      </div>
+      {/* Table - Scrollable */}
       {selectedCustomer && (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-          <div className="overflow-x-auto">
+        <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
+          <div className="flex-1 overflow-auto">
             <table className="erp-table">
               <thead><tr><th>Date</th><th>Reference No.</th><th>Type</th><th>Description</th><th>Vehicle</th><th>Material</th><th>Qty (BRASS)</th><th>Debit</th><th>Credit</th><th>Balance</th></tr></thead>
               <tbody>
@@ -116,27 +120,32 @@ export function SupplierLedgerPage() {
   }, [ledger, dateFrom, dateTo]);
 
   return (
-    <div className="space-y-4">
-      <div><h1 className="text-xl font-bold text-slate-800">Supplier Ledger</h1><p className="text-sm text-slate-500">View supplier transaction history and running balance</p></div>
-      <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap gap-3">
-        <select value={selectedSupplier} onChange={e => setSelectedSupplier(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm min-w-[200px]">
-          <option value="">Select Supplier</option>
-          {store.suppliers.filter(s => s.is_active).map(s => <option key={s.id} value={s.id}>{s.supplier_name}</option>)}
-        </select>
-        <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" />
-        <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" />
-      </div>
-      {selectedSupplier && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="p-3 bg-blue-50 rounded-lg text-center"><p className="text-lg font-bold text-blue-800">{filteredLedger.filter(e => e.type === 'Purchase').length}</p><p className="text-xs text-blue-600">Purchases</p></div>
-          <div className="p-3 bg-green-50 rounded-lg text-center"><p className="text-lg font-bold text-green-800">{formatCurrency(filteredLedger.reduce((s, e) => s + e.debit, 0))}</p><p className="text-xs text-green-600">Total Debit</p></div>
-          <div className="p-3 bg-emerald-50 rounded-lg text-center"><p className="text-lg font-bold text-emerald-800">{formatCurrency(filteredLedger.reduce((s, e) => s + e.credit, 0))}</p><p className="text-xs text-emerald-600">Total Credit</p></div>
-          <div className="p-3 bg-red-50 rounded-lg text-center"><p className="text-lg font-bold text-red-800">{formatCurrency(store.getSupplierOutstanding(selectedSupplier))}</p><p className="text-xs text-red-600">Outstanding</p></div>
+    <div className="flex flex-col h-full">
+      {/* Header - Fixed */}
+      <div className="flex-shrink-0 space-y-4">
+        <div><h1 className="text-xl font-bold text-slate-800">Supplier Ledger</h1><p className="text-sm text-slate-500">View supplier transaction history and running balance</p></div>
+        <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap gap-3">
+          <select value={selectedSupplier} onChange={e => setSelectedSupplier(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm min-w-[200px]">
+            <option value="">Select Supplier</option>
+            {store.suppliers.filter(s => s.is_active).map(s => <option key={s.id} value={s.id}>{s.supplier_name}</option>)}
+          </select>
+          <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+          <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm" />
         </div>
-      )}
+        {selectedSupplier && (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="p-3 bg-blue-50 rounded-lg text-center"><p className="text-lg font-bold text-blue-800">{filteredLedger.filter(e => e.type === 'Purchase').length}</p><p className="text-xs text-blue-600">Purchases</p></div>
+            <div className="p-3 bg-green-50 rounded-lg text-center"><p className="text-lg font-bold text-green-800">{formatCurrency(filteredLedger.reduce((s, e) => s + e.debit, 0))}</p><p className="text-xs text-green-600">Total Debit</p></div>
+            <div className="p-3 bg-emerald-50 rounded-lg text-center"><p className="text-lg font-bold text-emerald-800">{formatCurrency(filteredLedger.reduce((s, e) => s + e.credit, 0))}</p><p className="text-xs text-emerald-600">Total Credit</p></div>
+            <div className="p-3 bg-red-50 rounded-lg text-center"><p className="text-lg font-bold text-red-800">{formatCurrency(store.getSupplierOutstanding(selectedSupplier))}</p><p className="text-xs text-red-600">Outstanding</p></div>
+          </div>
+        )}
+      </div>
+
+      {/* Table - Scrollable */}
       {selectedSupplier && (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-          <div className="overflow-x-auto">
+        <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
+          <div className="flex-1 overflow-auto">
             <table className="erp-table">
               <thead><tr><th>Date</th><th>Reference No.</th><th>Type</th><th>Description</th><th>Vehicle</th><th>Material</th><th>Qty (BRASS)</th><th>Debit</th><th>Credit</th><th>Balance</th></tr></thead>
               <tbody>

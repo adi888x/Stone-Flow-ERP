@@ -34,18 +34,23 @@ export function VehiclesPage() {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div><h1 className="text-xl font-bold text-slate-800">Vehicles</h1><p className="text-sm text-slate-500">Manage vehicles for customers and suppliers</p></div>
-        <button onClick={() => setShowForm(true)} disabled={store.isDemoMode} className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white rounded-lg text-sm font-medium"><Plus size={16} /> Add Vehicle</button>
+    <div className="flex flex-col h-full">
+      {/* Header - Fixed */}
+      <div className="flex-shrink-0 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div><h1 className="text-xl font-bold text-slate-800">Vehicles</h1><p className="text-sm text-slate-500">Manage vehicles for customers and suppliers</p></div>
+          <button onClick={() => setShowForm(true)} disabled={store.isDemoMode} className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white rounded-lg text-sm font-medium"><Plus size={16} /> Add Vehicle</button>
+        </div>
+        <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap gap-3">
+          <div className="relative flex-1 min-w-[200px]"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" /><input type="text" placeholder="Search vehicles..." value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm" /></div>
+          <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm"><option value="">All Types</option><option value="TIPPER">TIPPER</option><option value="HYVA">HYVA</option><option value="TEMPO">TEMPO</option><option value="RIKSHA">RIKSHA</option><option value="TRACTOR">TRACTOR</option></select>
+          <select value={ownerFilter} onChange={e => setOwnerFilter(e.target.value as any)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm"><option value="all">All Owners</option><option value="customer">Customer</option><option value="supplier">Supplier</option></select>
+        </div>
       </div>
-      <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap gap-3">
-        <div className="relative flex-1 min-w-[200px]"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" /><input type="text" placeholder="Search vehicles..." value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm" /></div>
-        <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm"><option value="">All Types</option><option value="TIPPER">TIPPER</option><option value="HYVA">HYVA</option><option value="TEMPO">TEMPO</option><option value="RIKSHA">RIKSHA</option><option value="TRACTOR">TRACTOR</option></select>
-        <select value={ownerFilter} onChange={e => setOwnerFilter(e.target.value as any)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm"><option value="all">All Owners</option><option value="customer">Customer</option><option value="supplier">Supplier</option></select>
-      </div>
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <div className="overflow-x-auto">
+
+      {/* Table - Scrollable */}
+      <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
+        <div className="flex-1 overflow-auto">
           <table className="erp-table">
             <thead><tr><th>Vehicle No.</th><th>Type</th><th>Owner</th><th>Customer/Supplier</th><th>Driver</th><th>Mobile</th><th>Capacity</th><th>Status</th></tr></thead>
             <tbody>

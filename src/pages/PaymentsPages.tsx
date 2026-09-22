@@ -27,15 +27,21 @@ export function CustomerPaymentsPage() {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div><h1 className="text-xl font-bold text-slate-800">Customer Payments</h1><p className="text-sm text-slate-500">Record payments received from customers</p></div>
-        <button onClick={() => setShowForm(true)} disabled={store.isDemoMode} className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white rounded-lg text-sm font-medium"><Plus size={16} /> Record Payment</button>
+    <div className="flex flex-col h-full">
+      {/* Header - Fixed */}
+      <div className="flex-shrink-0 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div><h1 className="text-xl font-bold text-slate-800">Customer Payments</h1><p className="text-sm text-slate-500">Record payments received from customers</p></div>
+          <button onClick={() => setShowForm(true)} disabled={store.isDemoMode} className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white rounded-lg text-sm font-medium"><Plus size={16} /> Record Payment</button>
+        </div>
+        <div className="bg-white rounded-xl border border-slate-200 p-4">
+          <div className="relative"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" /><input type="text" placeholder="Search payments..." value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm" /></div>
+        </div>
       </div>
-      <div className="bg-white rounded-xl border border-slate-200 p-4">
-        <div className="relative"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" /><input type="text" placeholder="Search payments..." value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm" /></div>
-      </div>
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+
+      {/* Table - Scrollable */}
+      <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
+        <div className="flex-1 overflow-auto">
         <table className="erp-table">
           <thead><tr><th>Date</th><th>Payment No.</th><th>Customer</th><th>Amount</th><th>Mode</th><th>Reference</th><th>Created By</th></tr></thead>
           <tbody>
@@ -56,6 +62,7 @@ export function CustomerPaymentsPage() {
               })}
           </tbody>
         </table>
+        </div>
         <div className="px-4 py-3 border-t border-slate-200 bg-slate-50 text-sm text-slate-600">Total Received: {formatCurrency(filtered.reduce((s, p) => s + p.amount, 0))}</div>
       </div>
       {showForm && (
@@ -106,15 +113,21 @@ export function SupplierPaymentsPage() {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div><h1 className="text-xl font-bold text-slate-800">Supplier Payments</h1><p className="text-sm text-slate-500">Record payments made to suppliers</p></div>
-        <button onClick={() => setShowForm(true)} disabled={store.isDemoMode} className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white rounded-lg text-sm font-medium"><Plus size={16} /> Record Payment</button>
+    <div className="flex flex-col h-full">
+      {/* Header - Fixed */}
+      <div className="flex-shrink-0 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div><h1 className="text-xl font-bold text-slate-800">Supplier Payments</h1><p className="text-sm text-slate-500">Record payments made to suppliers</p></div>
+          <button onClick={() => setShowForm(true)} disabled={store.isDemoMode} className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white rounded-lg text-sm font-medium"><Plus size={16} /> Record Payment</button>
+        </div>
+        <div className="bg-white rounded-xl border border-slate-200 p-4">
+          <div className="relative"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" /><input type="text" placeholder="Search payments..." value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm" /></div>
+        </div>
       </div>
-      <div className="bg-white rounded-xl border border-slate-200 p-4">
-        <div className="relative"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" /><input type="text" placeholder="Search payments..." value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm" /></div>
-      </div>
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+
+      {/* Table - Scrollable */}
+      <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
+        <div className="flex-1 overflow-auto">
         <table className="erp-table">
           <thead><tr><th>Date</th><th>Payment No.</th><th>Supplier</th><th>Amount</th><th>Mode</th><th>Reference</th><th>Created By</th></tr></thead>
           <tbody>
@@ -135,6 +148,7 @@ export function SupplierPaymentsPage() {
               })}
           </tbody>
         </table>
+        </div>
         <div className="px-4 py-3 border-t border-slate-200 bg-slate-50 text-sm text-slate-600">Total Paid: {formatCurrency(filtered.reduce((s, p) => s + p.amount, 0))}</div>
       </div>
       {showForm && (

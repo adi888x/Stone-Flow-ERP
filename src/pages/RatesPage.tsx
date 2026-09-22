@@ -31,19 +31,25 @@ export function RatesPage() {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div><h1 className="text-xl font-bold text-slate-800">Customer Rates</h1><p className="text-sm text-slate-500">Manage customer-specific pricing (per BRASS)</p></div>
-        <button onClick={() => setShowForm(true)} disabled={store.isDemoMode} className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white rounded-lg text-sm font-medium"><Plus size={16} /> Add Rate</button>
+    <div className="flex flex-col h-full">
+      {/* Header - Fixed */}
+      <div className="flex-shrink-0 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div><h1 className="text-xl font-bold text-slate-800">Customer Rates</h1><p className="text-sm text-slate-500">Manage customer-specific pricing (per BRASS)</p></div>
+          <button onClick={() => setShowForm(true)} disabled={store.isDemoMode} className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white rounded-lg text-sm font-medium"><Plus size={16} /> Add Rate</button>
+        </div>
+        <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800">
+          <strong>Default Rate:</strong> {formatCurrency(store.appSettings.default_rate)} / BRASS — Applied when no customer-specific rate exists.
+        </div>
+        <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap gap-3">
+          <div className="relative flex-1 min-w-[200px]"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" /><input type="text" placeholder="Search rates..." value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm" /></div>
+          <select value={customerFilter} onChange={e => setCustomerFilter(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm"><option value="">All Customers</option>{store.customers.map(c => <option key={c.id} value={c.id}>{c.customer_name}</option>)}</select>
+        </div>
       </div>
-      <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800">
-        <strong>Default Rate:</strong> {formatCurrency(store.appSettings.default_rate)} / BRASS — Applied when no customer-specific rate exists.
-      </div>
-      <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap gap-3">
-        <div className="relative flex-1 min-w-[200px]"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" /><input type="text" placeholder="Search rates..." value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm" /></div>
-        <select value={customerFilter} onChange={e => setCustomerFilter(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm"><option value="">All Customers</option>{store.customers.map(c => <option key={c.id} value={c.id}>{c.customer_name}</option>)}</select>
-      </div>
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+
+      {/* Table - Scrollable */}
+      <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
+        <div className="flex-1 overflow-auto">
         <table className="erp-table">
           <thead><tr><th>Customer</th><th>Material</th><th>Rate / BRASS</th><th>Effective From</th><th>Effective To</th><th>Status</th></tr></thead>
           <tbody>
@@ -63,6 +69,7 @@ export function RatesPage() {
             })}
           </tbody>
         </table>
+        </div>
       </div>
       {showForm && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
