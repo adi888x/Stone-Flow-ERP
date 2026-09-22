@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useStoreContext } from '../App';
 import { Plus, Search, Printer, Eye, X, MoreVertical } from 'lucide-react';
 import type { PaperSize } from '../types';
@@ -15,6 +15,23 @@ export function SalesPage() {
   const [dateFilter, setDateFilter] = useState('today');
   const [paperSize, setPaperSize] = useState<PaperSize>('80mm');
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpenMenu(null);
+      }
+    };
+
+    if (openMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [openMenu]);
 
   // Form state
   const [customerId, setCustomerId] = useState('');
@@ -236,30 +253,32 @@ export function SalesPage() {
                       }`}>{sale.transaction_state}</span>
                     </td>
                     <td className="relative">
-                      <button 
-                        onClick={() => setOpenMenu(openMenu === sale.id ? null : sale.id)}
-                        className="p-1.5 hover:bg-slate-100 rounded"
-                      >
-                        <MoreVertical size={16} />
-                      </button>
-                      {openMenu === sale.id && (
-                        <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-50">
-                          <button 
-                            onClick={() => { setPreviewSale(sale); setShowPreview(true); setOpenMenu(null); }}
-                            className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 flex items-center gap-2"
-                          >
-                            <Eye size={14} /> Preview / Print
-                          </button>
-                          {sale.transaction_state === 'FULFILLED' && store.currentUser?.role === 'ADMIN' && (
+                      <div ref={openMenu === sale.id ? menuRef : null} className="relative">
+                        <button 
+                          onClick={() => setOpenMenu(openMenu === sale.id ? null : sale.id)}
+                          className="p-1.5 hover:bg-slate-100 rounded"
+                        >
+                          <MoreVertical size={16} />
+                        </button>
+                        {openMenu === sale.id && (
+                          <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-[9999]">
                             <button 
-                              onClick={() => handleCancelSale(sale.id)}
-                              className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                              onClick={() => { setPreviewSale(sale); setShowPreview(true); setOpenMenu(null); }}
+                              className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 flex items-center gap-2"
                             >
-                              <X size={14} /> Cancel Order
+                              <Eye size={14} /> Preview / Print
                             </button>
-                          )}
-                        </div>
-                      )}
+                            {sale.transaction_state === 'FULFILLED' && store.currentUser?.role === 'ADMIN' && (
+                              <button 
+                                onClick={() => handleCancelSale(sale.id)}
+                                className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                              >
+                                <X size={14} /> Cancel Order
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );

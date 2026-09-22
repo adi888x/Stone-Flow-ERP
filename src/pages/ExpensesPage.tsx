@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useStoreContext } from '../App';
 import { Plus, Search, X, MoreVertical, Edit } from 'lucide-react';
 
@@ -23,6 +23,23 @@ export function ExpensesPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpenMenu(null);
+      }
+    };
+
+    if (openMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [openMenu]);
 
   const filtered = useMemo(() => {
     return store.expenses.filter(e => {
@@ -77,20 +94,56 @@ export function ExpensesPage() {
 
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="erp-table">
-            <thead><tr><th>Date</th><th>Expense No.</th><th>Category</th><th>Description</th><th>Vendor/Person</th><th>Paid By</th><th>Mode</th><th>Amount</th></tr></thead>
+          <table className="erp-table text-base">
+            <thead><tr><th>Date</th><th>Expense No.</th><th>Category</th><th>Description</th><th>Vendor/Person</th><th>Paid By</th><th>Mode</th><th>Amount</th><th></th></tr></thead>
             <tbody>
-              {filtered.length === 0 ? <tr><td colSpan={8} className="text-center py-8 text-slate-500">No expenses found</td></tr> :
+              {filtered.length === 0 ? <tr><td colSpan={9} className="text-center py-8 text-slate-500">No expenses found</td></tr> :
                 filtered.map(e => (
                   <tr key={e.id}>
                     <td>{e.date}</td>
-                    <td className="font-mono text-xs">{e.expense_number}</td>
+                    <td className="font-mono text-sm">{e.expense_number}</td>
                     <td><span className="px-2 py-0.5 bg-slate-100 rounded text-xs font-medium">{e.category}</span></td>
                     <td className="max-w-[200px] truncate">{e.description_of_work}</td>
                     <td>{e.vendor_or_person}</td>
                     <td>{e.paid_by}</td>
                     <td><span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-xs">{e.payment_mode}</span></td>
                     <td className="font-medium">{formatCurrency(e.amount)}</td>
+                    <td className="relative">
+                      <div ref={openMenu === e.id ? menuRef : null} className="relative">
+                        <button 
+                          onClick={() => setOpenMenu(openMenu === e.id ? null : e.id)}
+                          className="p-1.5 hover:bg-slate-100 rounded"
+                        >
+                          <MoreVertical size={16} />
+                        </button>
+                        {openMenu === e.id && (
+                          <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-[9999]">
+                            <button 
+                              onClick={() => {
+                                // Edit expense logic
+                                setOpenMenu(null);
+                              }}
+                              className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 flex items-center gap-2"
+                            >
+                              <Edit size={14} /> Edit Expense
+                            </button>
+                            {e.transaction_state === 'FULFILLED' && store.currentUser?.role === 'ADMIN' && (
+                              <button 
+                                onClick={() => {
+                                  if (confirm('Are you sure you want to cancel this expense?')) {
+                                    // Cancel expense logic
+                                    setOpenMenu(null);
+                                  }
+                                }}
+                                className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                              >
+                                <X size={14} /> Cancel Expense
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </td>
                   </tr>
                 ))}
             </tbody>

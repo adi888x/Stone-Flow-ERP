@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useStoreContext } from '../App';
 import { Plus, Search, Eye, X, Printer, MoreVertical } from 'lucide-react';
 
@@ -19,6 +19,23 @@ export function PurchasesPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpenMenu(null);
+      }
+    };
+
+    if (openMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [openMenu]);
 
   const filteredPurchases = useMemo(() => {
     return store.purchases.filter(p => {
@@ -114,35 +131,37 @@ export function PurchasesPage() {
                     <td className="font-medium">{formatCurrency(p.total_amount)}</td>
                     <td><span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${p.transaction_state === 'FULFILLED' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{p.transaction_state}</span></td>
                     <td className="relative">
-                      <button 
-                        onClick={() => setOpenMenu(openMenu === p.id ? null : p.id)}
-                        className="p-1.5 hover:bg-slate-100 rounded"
-                      >
-                        <MoreVertical size={16} />
-                      </button>
-                      {openMenu === p.id && (
-                        <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-50">
-                          <button 
-                            onClick={() => { setPreviewPurchase(p); setShowPreview(true); setOpenMenu(null); }}
-                            className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 flex items-center gap-2"
-                          >
-                            <Eye size={14} /> Preview / Print
-                          </button>
-                          {p.transaction_state === 'FULFILLED' && store.currentUser?.role === 'ADMIN' && (
+                      <div ref={openMenu === p.id ? menuRef : null} className="relative">
+                        <button 
+                          onClick={() => setOpenMenu(openMenu === p.id ? null : p.id)}
+                          className="p-1.5 hover:bg-slate-100 rounded"
+                        >
+                          <MoreVertical size={16} />
+                        </button>
+                        {openMenu === p.id && (
+                          <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-[9999]">
                             <button 
-                              onClick={() => {
-                                if (confirm('Are you sure you want to cancel this purchase?')) {
-                                  // Add cancel purchase logic here
-                                  setOpenMenu(null);
-                                }
-                              }}
-                              className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                              onClick={() => { setPreviewPurchase(p); setShowPreview(true); setOpenMenu(null); }}
+                              className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 flex items-center gap-2"
                             >
-                              <X size={14} /> Cancel Purchase
+                              <Eye size={14} /> Preview / Print
                             </button>
-                          )}
-                        </div>
-                      )}
+                            {p.transaction_state === 'FULFILLED' && store.currentUser?.role === 'ADMIN' && (
+                              <button 
+                                onClick={() => {
+                                  if (confirm('Are you sure you want to cancel this purchase?')) {
+                                    // Add cancel purchase logic here
+                                    setOpenMenu(null);
+                                  }
+                                }}
+                                className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                              >
+                                <X size={14} /> Cancel Purchase
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );
