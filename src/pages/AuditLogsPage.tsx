@@ -24,7 +24,7 @@ export function AuditLogsPage() {
       </div>
       <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
         <div className="flex-1 overflow-auto">
-          <table className="erp-table">
+          <table className="erp-table text-base">
             <thead className="sticky top-0 bg-white z-10 shadow-sm"><tr><th>Timestamp</th><th>User</th><th>Action</th><th>Entity</th><th>Entity ID</th><th>Details</th></tr></thead>
             <tbody>
               {filtered.length === 0 ? <tr><td colSpan={6} className="text-center py-8 text-slate-500">No audit logs found</td></tr> :

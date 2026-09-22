@@ -65,7 +65,7 @@ export function CustomerLedgerPage() {
       {selectedCustomer && (
         <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
           <div className="flex-1 overflow-auto">
-            <table className="erp-table">
+            <table className="erp-table text-base">
               <thead className="sticky top-0 bg-white z-10 shadow-sm"><tr><th>Date</th><th>Reference No.</th><th>Type</th><th>Description</th><th>Vehicle</th><th>Material</th><th>Qty (BRASS)</th><th>Debit</th><th>Credit</th><th>Balance</th></tr></thead>
               <tbody>
                 {filteredLedger.length === 0 ? <tr><td colSpan={10} className="text-center py-8 text-slate-500">No transactions found</td></tr> :
@@ -146,7 +146,7 @@ export function SupplierLedgerPage() {
       {selectedSupplier && (
         <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
           <div className="flex-1 overflow-auto">
-            <table className="erp-table">
+            <table className="erp-table text-base">
               <thead className="sticky top-0 bg-white z-10 shadow-sm"><tr><th>Date</th><th>Reference No.</th><th>Type</th><th>Description</th><th>Vehicle</th><th>Material</th><th>Qty (BRASS)</th><th>Debit</th><th>Credit</th><th>Balance</th></tr></thead>
               <tbody>
                 {filteredLedger.length === 0 ? <tr><td colSpan={10} className="text-center py-8 text-slate-500">No transactions found</td></tr> :
