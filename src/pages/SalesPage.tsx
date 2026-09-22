@@ -118,7 +118,6 @@ export function SalesPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold text-slate-800">Sales / Outward</h1>
           <p className="text-sm text-slate-500">Manage sale slips and outward transactions</p>
         </div>
         <button

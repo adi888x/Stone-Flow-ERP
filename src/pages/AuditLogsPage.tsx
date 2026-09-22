@@ -17,7 +17,7 @@ export function AuditLogsPage() {
 
   return (
     <div className="space-y-4">
-      <div><h1 className="text-xl font-bold text-slate-800">Audit Logs</h1><p className="text-sm text-slate-500">Track all system changes and actions</p></div>
+      <div><p className="text-sm text-slate-500">Track all system changes and actions</p></div>
       <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[200px]"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" /><input type="text" placeholder="Search logs..." value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm" /></div>
         <select value={entityFilter} onChange={e => setEntityFilter(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm"><option value="">All Entities</option>{entityTypes.map(t => <option key={t} value={t}>{t}</option>)}</select>

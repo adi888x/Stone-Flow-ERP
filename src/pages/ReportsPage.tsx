@@ -76,7 +76,7 @@ export function ReportsPage() {
 
   return (
     <div className="space-y-4">
-      <div><h1 className="text-xl font-bold text-slate-800">Reports</h1><p className="text-sm text-slate-500">Business reports with export options</p></div>
+      <div><p className="text-sm text-slate-500">Business reports with export options</p></div>
       <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap gap-3">
         <select value={reportType} onChange={e => setReportType(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm min-w-[200px]">
           {reportTypes.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}

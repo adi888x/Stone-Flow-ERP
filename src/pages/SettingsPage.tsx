@@ -7,7 +7,7 @@ export function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <div><h1 className="text-xl font-bold text-slate-800">Application Settings</h1><p className="text-sm text-slate-500">Configure system settings and preferences</p></div>
+      <div><p className="text-sm text-slate-500">Configure system settings and preferences</p></div>
 
       {/* Business Info */}
       <div className="bg-white rounded-xl border border-slate-200 p-5">

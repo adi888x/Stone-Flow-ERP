@@ -29,7 +29,7 @@ export function CustomerPaymentsPage() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div><h1 className="text-xl font-bold text-slate-800">Customer Payments</h1><p className="text-sm text-slate-500">Record payments received from customers</p></div>
+        <div><p className="text-sm text-slate-500">Record payments received from customers</p></div>
         <button onClick={() => setShowForm(true)} disabled={store.isDemoMode} className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white rounded-lg text-sm font-medium"><Plus size={16} /> Record Payment</button>
       </div>
       <div className="bg-white rounded-xl border border-slate-200 p-4">
@@ -108,7 +108,7 @@ export function SupplierPaymentsPage() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div><h1 className="text-xl font-bold text-slate-800">Supplier Payments</h1><p className="text-sm text-slate-500">Record payments made to suppliers</p></div>
+        <div><p className="text-sm text-slate-500">Record payments made to suppliers</p></div>
         <button onClick={() => setShowForm(true)} disabled={store.isDemoMode} className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white rounded-lg text-sm font-medium"><Plus size={16} /> Record Payment</button>
       </div>
       <div className="bg-white rounded-xl border border-slate-200 p-4">
