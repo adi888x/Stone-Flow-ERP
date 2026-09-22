@@ -112,48 +112,49 @@ export function Dashboard({ setCurrentPage }: DashboardProps) {
           <h1 className="text-xl font-bold text-slate-800">Dashboard</h1>
           <p className="text-sm text-slate-500">Overview of business operations</p>
         </div>
-        <div className="flex gap-2">
-          {(['today', 'week', 'month'] as const).map(r => (
+        <div className="flex items-center gap-3">
+          {/* Quick Action Buttons */}
+          <div className="flex gap-2">
             <button
-              key={r}
-              onClick={() => setDateRange(r)}
-              className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-colors ${
-                dateRange === r ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
-              }`}
+              onClick={() => {
+                sessionStorage.setItem('openSaleForm', 'true');
+                setCurrentPage('sales');
+              }}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors shadow-sm"
+              title="Create new sale"
             >
-              {r === 'today' ? 'Today' : r === 'week' ? 'This Week' : 'This Month'}
+              <Plus size={16} />
+              <span className="hidden sm:inline">New Sale</span>
             </button>
-          ))}
-        </div>
-      </div>
+            
+            <button
+              onClick={() => {
+                sessionStorage.setItem('openPurchaseForm', 'true');
+                setCurrentPage('purchases');
+              }}
+              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium transition-colors shadow-sm"
+              title="Create new purchase"
+            >
+              <Plus size={16} />
+              <span className="hidden sm:inline">New Purchase</span>
+            </button>
+          </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <button
-          onClick={() => setCurrentPage('sales')}
-          className="flex items-center gap-4 p-5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all group"
-        >
-          <div className="p-3 bg-white/20 rounded-lg group-hover:bg-white/30 transition-colors">
-            <Plus size={28} />
+          {/* Date Range Selector */}
+          <div className="flex gap-2">
+            {(['today', 'week', 'month'] as const).map(r => (
+              <button
+                key={r}
+                onClick={() => setDateRange(r)}
+                className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-colors ${
+                  dateRange === r ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                }`}
+              >
+                {r === 'today' ? 'Today' : r === 'week' ? 'This Week' : 'This Month'}
+              </button>
+            ))}
           </div>
-          <div className="text-left">
-            <p className="text-lg font-bold">New Sale</p>
-            <p className="text-sm text-blue-100">Create a new sale entry</p>
-          </div>
-        </button>
-        
-        <button
-          onClick={() => setCurrentPage('purchases')}
-          className="flex items-center gap-4 p-5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all group"
-        >
-          <div className="p-3 bg-white/20 rounded-lg group-hover:bg-white/30 transition-colors">
-            <Plus size={28} />
-          </div>
-          <div className="text-left">
-            <p className="text-lg font-bold">New Purchase</p>
-            <p className="text-sm text-emerald-100">Create a new purchase entry</p>
-          </div>
-        </button>
+        </div>
       </div>
 
       {/* Stat Cards */}

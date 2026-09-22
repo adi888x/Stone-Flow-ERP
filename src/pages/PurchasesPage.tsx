@@ -7,6 +7,15 @@ function formatCurrency(n: number) { return '₹' + n.toLocaleString('en-IN'); }
 export function PurchasesPage() {
   const store = useStoreContext();
   const [showForm, setShowForm] = useState(false);
+
+  // Auto-open form if coming from dashboard quick action
+  useEffect(() => {
+    const shouldOpen = sessionStorage.getItem('openPurchaseForm');
+    if (shouldOpen === 'true') {
+      setShowForm(true);
+      sessionStorage.removeItem('openPurchaseForm');
+    }
+  }, []);
   const [showPreview, setShowPreview] = useState(false);
   const [previewPurchase, setPreviewPurchase] = useState<any>(null);
   const [search, setSearch] = useState('');
