@@ -112,19 +112,6 @@ export function Dashboard({ setCurrentPage }: DashboardProps) {
           <h1 className="text-xl font-bold text-slate-800">Dashboard</h1>
           <p className="text-sm text-slate-500">Overview of business operations</p>
         </div>
-        <div className="flex gap-2">
-          {(['today', 'week', 'month'] as const).map(r => (
-            <button
-              key={r}
-              onClick={() => setDateRange(r)}
-              className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-colors ${
-                dateRange === r ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
-              }`}
-            >
-              {r === 'today' ? 'Today' : r === 'week' ? 'This Week' : 'This Month'}
-            </button>
-          ))}
-        </div>
       </div>
 
       {/* Quick Actions */}
@@ -178,6 +165,21 @@ export function Dashboard({ setCurrentPage }: DashboardProps) {
             </svg>
           </div>
         </button>
+      </div>
+
+      {/* Date Range Filter */}
+      <div className="flex gap-2">
+        {(['today', 'week', 'month'] as const).map(r => (
+          <button
+            key={r}
+            onClick={() => setDateRange(r)}
+            className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-colors ${
+              dateRange === r ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+            }`}
+          >
+            {r === 'today' ? 'Today' : r === 'week' ? 'This Week' : 'This Month'}
+          </button>
+        ))}
       </div>
 
       {/* Stat Cards */}
