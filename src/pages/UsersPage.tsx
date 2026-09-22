@@ -47,6 +47,7 @@ export function UsersPage() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Role descriptions */}
