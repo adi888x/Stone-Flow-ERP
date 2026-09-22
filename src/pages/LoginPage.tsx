@@ -25,7 +25,7 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-4 animate-[fadeIn_0.5s_ease-out]">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
