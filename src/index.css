@@ -112,6 +112,11 @@ input:focus, select:focus, textarea:focus, button:focus-visible {
   outline-offset: 1px;
 }
 
+/* Override focus style for global search input */
+.global-search-input:focus {
+  outline: none !important;
+}
+
 /* Mobile responsive */
 @media (max-width: 768px) {
   .erp-table {

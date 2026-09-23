@@ -124,7 +124,8 @@ export function GlobalSearchDialog({ isOpen, onClose, store, onNavigate }: Globa
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Search anything..."
-            className="flex-1 px-4 py-4 text-base outline-none placeholder:text-slate-400"
+            className="flex-1 px-4 py-4 text-base outline-none focus:outline-none focus:ring-0 border-0 focus:border-0 placeholder:text-slate-400 bg-transparent global-search-input"
+            style={{ outline: 'none' }}
           />
           <div className="flex items-center gap-2 text-xs text-slate-400">
             <kbd className="px-2 py-1 bg-slate-100 rounded border border-slate-200">ESC</kbd>
