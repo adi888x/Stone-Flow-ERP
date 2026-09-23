@@ -10,7 +10,7 @@ export function CustomersPage() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState<string | null>(null);
-  const [form, setForm] = useState({ customer_name: '', mobile: '', alternate_mobile: '', address: '', contact_person: '', notes: '' });
+  const [form, setForm] = useState({ customer_name: '', mobile: '', alternate_mobile: '', address: '', contact_person: '', opening_balance: '', notes: '' });
   const [error, setError] = useState('');
 
   // Auto-open form if coming from dashboard quick action
@@ -52,8 +52,12 @@ export function CustomersPage() {
     if (!form.customer_name) { setError('Customer name is required.'); return; }
     if (!form.mobile) { setError('Mobile number is required.'); return; }
     if (store.isDemoMode) { setError('Demo mode is read-only.'); return; }
-    store.addCustomer({ ...form, is_active: true });
-    setShowForm(false); setForm({ customer_name: '', mobile: '', alternate_mobile: '', address: '', contact_person: '', notes: '' });
+    store.addCustomer({ 
+      ...form, 
+      opening_balance: form.opening_balance ? parseFloat(form.opening_balance) : 0,
+      is_active: true 
+    });
+    setShowForm(false); setForm({ customer_name: '', mobile: '', alternate_mobile: '', address: '', contact_person: '', opening_balance: '', notes: '' });
   };
 
   const customerDetail = selectedCustomer ? store.customers.find(c => c.id === selectedCustomer) : null;
@@ -244,10 +248,13 @@ export function CustomersPage() {
                 <textarea value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} rows={2} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
               </div>
               <div className="grid grid-cols-2 gap-4">
-
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Contact Person</label>
                   <input type="text" value={form.contact_person} onChange={e => setForm({ ...form, contact_person: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Opening Balance (₹)</label>
+                  <input type="number" step="0.01" value={form.opening_balance} onChange={e => setForm({ ...form, opening_balance: e.target.value })} placeholder="0.00" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
                 </div>
               </div>
             </div>

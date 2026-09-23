@@ -521,16 +521,20 @@ export function useStore() {
 
   // Computed values
   const getCustomerOutstanding = useCallback((customerId: string) => {
+    const customer = customers.find(c => c.id === customerId);
+    const openingBalance = customer?.opening_balance || 0;
     const totalSales = sales.filter(s => s.customer_id === customerId && s.transaction_state === 'FULFILLED').reduce((sum, s) => sum + s.total_amount, 0);
     const totalPayments = customerPayments.filter(p => p.customer_id === customerId).reduce((sum, p) => sum + p.amount, 0);
-    return totalSales - totalPayments;
-  }, [sales, customerPayments]);
+    return openingBalance + totalSales - totalPayments;
+  }, [customers, sales, customerPayments]);
 
   const getSupplierOutstanding = useCallback((supplierId: string) => {
+    const supplier = suppliers.find(s => s.id === supplierId);
+    const openingBalance = supplier?.opening_balance || 0;
     const totalPurchases = purchases.filter(p => p.supplier_id === supplierId && p.transaction_state === 'FULFILLED').reduce((sum, p) => sum + p.total_amount, 0);
     const totalPayments = supplierPayments.filter(p => p.supplier_id === supplierId).reduce((sum, p) => sum + p.amount, 0);
-    return totalPurchases - totalPayments;
-  }, [purchases, supplierPayments]);
+    return openingBalance + totalPurchases - totalPayments;
+  }, [suppliers, purchases, supplierPayments]);
 
   const getApplicableRate = useCallback((customerId: string, materialId: string) => {
     const rate = customerRates.find(r =>
