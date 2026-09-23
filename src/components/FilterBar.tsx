@@ -19,6 +19,7 @@ interface FilterBarProps {
   onExportExcel: () => void;
   onExportPDF: () => void;
   onReset: () => void;
+  children?: React.ReactNode;
 }
 
 export function FilterBar({
@@ -36,6 +37,7 @@ export function FilterBar({
   onExportExcel,
   onExportPDF,
   onReset,
+  children,
 }: FilterBarProps) {
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-4 space-y-4">
@@ -75,6 +77,13 @@ export function FilterBar({
           </button>
         </div>
       </div>
+
+      {/* Additional Filters (children) */}
+      {children && (
+        <div className="flex flex-wrap gap-3">
+          {children}
+        </div>
+      )}
     </div>
   );
 }

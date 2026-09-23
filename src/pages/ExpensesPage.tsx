@@ -209,15 +209,12 @@ export function ExpensesPage() {
           onExportExcel={handleExportExcel}
           onExportPDF={handleExportPDF}
           onReset={handleReset}
-        />
-
-        {/* Category Filter */}
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
+        >
           <select value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm">
             <option value="">All Categories</option>
             {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
-        </div>
+        </FilterBar>
       </div>
 
       {/* Table - Scrollable */}
