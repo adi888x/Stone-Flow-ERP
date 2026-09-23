@@ -45,6 +45,7 @@ export function SalesPage() {
   }, [openMenu]);
 
   // Form state
+  const [formDate, setFormDate] = useState(new Date().toISOString().split('T')[0]);
   const [customerId, setCustomerId] = useState('');
   const [vehicleId, setVehicleId] = useState('');
   const [materialId, setMaterialId] = useState('');
@@ -152,7 +153,7 @@ export function SalesPage() {
   };
 
   const buildSaleData = () => ({
-    date: new Date().toISOString().split('T')[0],
+    date: formDate,
     time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true }),
     customer_id: customerId,
     vehicle_id: vehicleId,
@@ -166,6 +167,7 @@ export function SalesPage() {
   });
 
   const resetForm = () => {
+    setFormDate(new Date().toISOString().split('T')[0]);
     setCustomerId(''); setVehicleId(''); setMaterialId(''); setQuantity(''); setRate(''); setNotes(''); setError('');
   };
 
@@ -327,6 +329,11 @@ export function SalesPage() {
             </div>
             <div className="p-5 space-y-4">
               {error && <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{error}</div>}
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Date *</label>
+                <input type="date" value={formDate} onChange={e => setFormDate(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+              </div>
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Customer *</label>

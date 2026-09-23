@@ -12,6 +12,7 @@ export function ExpensesPage() {
   const [showForm, setShowForm] = useState(false);
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
+  const [formDate, setFormDate] = useState(new Date().toISOString().split('T')[0]);
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
   const [workArea, setWorkArea] = useState('');
@@ -59,7 +60,7 @@ export function ExpensesPage() {
     if (store.isDemoMode) { setError('Demo mode is read-only.'); return; }
 
     store.addExpense({
-      date: new Date().toISOString().split('T')[0],
+      date: formDate,
       time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true }),
       category, description_of_work: description, work_area: workArea,
       vendor_or_person: vendor, paid_by: paidBy || store.currentUser?.full_name || '',
@@ -67,6 +68,7 @@ export function ExpensesPage() {
       created_by: store.currentUser?.full_name || '',
     });
     setShowForm(false); setSuccess('Expense saved successfully!');
+    setFormDate(new Date().toISOString().split('T')[0]);
     setCategory(''); setDescription(''); setWorkArea(''); setVendor(''); setPaidBy(''); setAmount(''); setNotes('');
   };
 
@@ -182,6 +184,10 @@ export function ExpensesPage() {
             </div>
             <div className="p-5 space-y-4">
               {error && <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{error}</div>}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Date *</label>
+                <input type="date" value={formDate} onChange={e => setFormDate(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Category *</label>

@@ -8,7 +8,7 @@ export function CustomerPaymentsPage() {
   const store = useStoreContext();
   const [showForm, setShowForm] = useState(false);
   const [search, setSearch] = useState('');
-  const [form, setForm] = useState({ customer_id: '', amount: '', payment_mode: 'Cash' as typeof PAYMENT_MODES[number], reference_number: '', notes: '' });
+  const [form, setForm] = useState({ date: new Date().toISOString().split('T')[0], customer_id: '', amount: '', payment_mode: 'Cash' as typeof PAYMENT_MODES[number], reference_number: '', notes: '' });
   const [error, setError] = useState('');
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -40,8 +40,8 @@ export function CustomerPaymentsPage() {
     if (!form.customer_id) { setError('Customer is required.'); return; }
     if (!form.amount || parseFloat(form.amount) <= 0) { setError('Amount must be greater than 0.'); return; }
     if (store.isDemoMode) { setError('Demo mode is read-only.'); return; }
-    store.addCustomerPayment({ customer_id: form.customer_id, date: new Date().toISOString().split('T')[0], amount: parseFloat(form.amount), payment_mode: form.payment_mode, reference_number: form.reference_number, notes: form.notes, created_by: store.currentUser?.full_name || '' });
-    setShowForm(false); setForm({ customer_id: '', amount: '', payment_mode: 'Cash', reference_number: '', notes: '' });
+    store.addCustomerPayment({ customer_id: form.customer_id, date: form.date, amount: parseFloat(form.amount), payment_mode: form.payment_mode, reference_number: form.reference_number, notes: form.notes, created_by: store.currentUser?.full_name || '' });
+    setShowForm(false); setForm({ date: new Date().toISOString().split('T')[0], customer_id: '', amount: '', payment_mode: 'Cash', reference_number: '', notes: '' });
   };
 
   return (
@@ -123,6 +123,7 @@ export function CustomerPaymentsPage() {
             <div className="p-5 border-b border-slate-200 flex items-center justify-between"><h2 className="text-lg font-bold text-slate-800">Record Customer Payment</h2><button onClick={() => setShowForm(false)} className="p-1.5 hover:bg-slate-100 rounded"><X size={18} /></button></div>
             <div className="p-5 space-y-4">
               {error && <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{error}</div>}
+              <div><label className="block text-sm font-medium text-slate-700 mb-1">Date *</label><input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" /></div>
               <div><label className="block text-sm font-medium text-slate-700 mb-1">Customer *</label><select value={form.customer_id} onChange={e => setForm({ ...form, customer_id: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"><option value="">Select customer</option>{store.customers.filter(c => c.is_active).map(c => <option key={c.id} value={c.id}>{c.customer_name} — Outstanding: {formatCurrency(store.getCustomerOutstanding(c.id))}</option>)}</select></div>
               <div><label className="block text-sm font-medium text-slate-700 mb-1">Amount (₹) *</label><input type="number" value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} placeholder="0.00" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" /></div>
               <div className="grid grid-cols-2 gap-4">
@@ -146,7 +147,7 @@ export function SupplierPaymentsPage() {
   const store = useStoreContext();
   const [showForm, setShowForm] = useState(false);
   const [search, setSearch] = useState('');
-  const [form, setForm] = useState({ supplier_id: '', amount: '', payment_mode: 'Cash' as typeof PAYMENT_MODES[number], reference_number: '', notes: '' });
+  const [form, setForm] = useState({ date: new Date().toISOString().split('T')[0], supplier_id: '', amount: '', payment_mode: 'Cash' as typeof PAYMENT_MODES[number], reference_number: '', notes: '' });
   const [error, setError] = useState('');
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -178,8 +179,8 @@ export function SupplierPaymentsPage() {
     if (!form.supplier_id) { setError('Supplier is required.'); return; }
     if (!form.amount || parseFloat(form.amount) <= 0) { setError('Amount must be greater than 0.'); return; }
     if (store.isDemoMode) { setError('Demo mode is read-only.'); return; }
-    store.addSupplierPayment({ supplier_id: form.supplier_id, date: new Date().toISOString().split('T')[0], amount: parseFloat(form.amount), payment_mode: form.payment_mode, reference_number: form.reference_number, notes: form.notes, created_by: store.currentUser?.full_name || '' });
-    setShowForm(false); setForm({ supplier_id: '', amount: '', payment_mode: 'Cash', reference_number: '', notes: '' });
+    store.addSupplierPayment({ supplier_id: form.supplier_id, date: form.date, amount: parseFloat(form.amount), payment_mode: form.payment_mode, reference_number: form.reference_number, notes: form.notes, created_by: store.currentUser?.full_name || '' });
+    setShowForm(false); setForm({ date: new Date().toISOString().split('T')[0], supplier_id: '', amount: '', payment_mode: 'Cash', reference_number: '', notes: '' });
   };
 
   return (
@@ -261,6 +262,7 @@ export function SupplierPaymentsPage() {
             <div className="p-5 border-b border-slate-200 flex items-center justify-between"><h2 className="text-lg font-bold text-slate-800">Record Supplier Payment</h2><button onClick={() => setShowForm(false)} className="p-1.5 hover:bg-slate-100 rounded"><X size={18} /></button></div>
             <div className="p-5 space-y-4">
               {error && <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{error}</div>}
+              <div><label className="block text-sm font-medium text-slate-700 mb-1">Date *</label><input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" /></div>
               <div><label className="block text-sm font-medium text-slate-700 mb-1">Supplier *</label><select value={form.supplier_id} onChange={e => setForm({ ...form, supplier_id: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"><option value="">Select supplier</option>{store.suppliers.filter(s => s.is_active).map(s => <option key={s.id} value={s.id}>{s.supplier_name} — Outstanding: {formatCurrency(store.getSupplierOutstanding(s.id))}</option>)}</select></div>
               <div><label className="block text-sm font-medium text-slate-700 mb-1">Amount (₹) *</label><input type="number" value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} placeholder="0.00" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" /></div>
               <div className="grid grid-cols-2 gap-4">

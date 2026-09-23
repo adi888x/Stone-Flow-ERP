@@ -19,6 +19,7 @@ export function PurchasesPage() {
   const [showPreview, setShowPreview] = useState(false);
   const [previewPurchase, setPreviewPurchase] = useState<any>(null);
   const [search, setSearch] = useState('');
+  const [formDate, setFormDate] = useState(new Date().toISOString().split('T')[0]);
   const [supplierId, setSupplierId] = useState('');
   const [vehicleId, setVehicleId] = useState('');
   const [materialId, setMaterialId] = useState('');
@@ -75,7 +76,7 @@ export function PurchasesPage() {
     if (vehicle && vehicle.supplier_id !== supplierId) { setError('Vehicle does not belong to this supplier.'); return; }
 
     const saved = store.addPurchase({
-      date: new Date().toISOString().split('T')[0],
+      date: formDate,
       time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true }),
       supplier_id: supplierId,
       vehicle_id: vehicleId,
@@ -91,6 +92,7 @@ export function PurchasesPage() {
     setShowForm(false);
     setShowPreview(true);
     setSuccess('Purchase slip created successfully!');
+    setFormDate(new Date().toISOString().split('T')[0]);
     setSupplierId(''); setVehicleId(''); setMaterialId(''); setQuantity(''); setRate(''); setNotes('');
   };
 
@@ -212,6 +214,10 @@ export function PurchasesPage() {
             </div>
             <div className="p-5 space-y-4">
               {error && <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{error}</div>}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Date *</label>
+                <input type="date" value={formDate} onChange={e => setFormDate(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
+              </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Supplier *</label>
                 <select value={supplierId} onChange={e => { setSupplierId(e.target.value); setVehicleId(''); }} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
