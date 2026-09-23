@@ -113,147 +113,6 @@ export function Dashboard({ setCurrentPage }: DashboardProps) {
           <h1 className="text-xl font-bold text-slate-800">Dashboard</h1>
           <p className="text-sm text-slate-500">Overview of business operations</p>
         </div>
-        
-        {/* Quick Links Hamburger Button */}
-        <div className="relative">
-          <button
-            onClick={() => setShowQuickLinks(!showQuickLinks)}
-            className="relative w-12 h-12 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center group"
-            aria-label="Quick Links"
-          >
-            {/* Hamburger Icon with Animation */}
-            <div className="relative w-6 h-6">
-              <span
-                className={`absolute left-0 w-6 h-0.5 bg-slate-700 rounded-full transition-all duration-300 ease-in-out ${
-                  showQuickLinks ? 'top-3 rotate-45' : 'top-1'
-                }`}
-              />
-              <span
-                className={`absolute left-0 top-3 w-6 h-0.5 bg-slate-700 rounded-full transition-all duration-300 ease-in-out ${
-                  showQuickLinks ? 'opacity-0 scale-0' : 'opacity-100 scale-100'
-                }`}
-              />
-              <span
-                className={`absolute left-0 w-6 h-0.5 bg-slate-700 rounded-full transition-all duration-300 ease-in-out ${
-                  showQuickLinks ? 'top-3 -rotate-45' : 'top-5'
-                }`}
-              />
-            </div>
-          </button>
-
-          {/* Quick Links Dropdown Menu */}
-          {showQuickLinks && (
-            <div className="absolute right-0 top-14 w-72 bg-white rounded-xl shadow-2xl border border-slate-200 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-              <div className="px-4 py-2 border-b border-slate-100">
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Quick Actions</p>
-              </div>
-              
-              <button
-                onClick={() => {
-                  sessionStorage.setItem('openExpenseForm', 'true');
-                  setCurrentPage('expenses');
-                  setShowQuickLinks(false);
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors group"
-              >
-                <div className="p-2 bg-amber-100 rounded-lg group-hover:bg-amber-200 transition-colors">
-                  <Receipt size={18} className="text-amber-700" />
-                </div>
-                <div className="text-left flex-1">
-                  <p className="text-sm font-medium text-slate-800">New Expense</p>
-                  <p className="text-xs text-slate-500">Record a new expense</p>
-                </div>
-              </button>
-
-              <button
-                onClick={() => {
-                  sessionStorage.setItem('openCustomerPaymentForm', 'true');
-                  setCurrentPage('customer-payments');
-                  setShowQuickLinks(false);
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors group"
-              >
-                <div className="p-2 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
-                  <IndianRupee size={18} className="text-green-700" />
-                </div>
-                <div className="text-left flex-1">
-                  <p className="text-sm font-medium text-slate-800">Record Customer Payment</p>
-                  <p className="text-xs text-slate-500">Receive payment from customer</p>
-                </div>
-              </button>
-
-              <button
-                onClick={() => {
-                  sessionStorage.setItem('openSupplierPaymentForm', 'true');
-                  setCurrentPage('supplier-payments');
-                  setShowQuickLinks(false);
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors group"
-              >
-                <div className="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
-                  <IndianRupee size={18} className="text-blue-700" />
-                </div>
-                <div className="text-left flex-1">
-                  <p className="text-sm font-medium text-slate-800">Record Supplier Payment</p>
-                  <p className="text-xs text-slate-500">Make payment to supplier</p>
-                </div>
-              </button>
-
-              <div className="border-t border-slate-100 my-2" />
-
-              <button
-                onClick={() => {
-                  sessionStorage.setItem('openCustomerForm', 'true');
-                  setCurrentPage('customers');
-                  setShowQuickLinks(false);
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors group"
-              >
-                <div className="p-2 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
-                  <UserPlus size={18} className="text-purple-700" />
-                </div>
-                <div className="text-left flex-1">
-                  <p className="text-sm font-medium text-slate-800">Add Customer</p>
-                  <p className="text-xs text-slate-500">Create new customer</p>
-                </div>
-              </button>
-
-              <button
-                onClick={() => {
-                  sessionStorage.setItem('openSupplierForm', 'true');
-                  setCurrentPage('suppliers');
-                  setShowQuickLinks(false);
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors group"
-              >
-                <div className="p-2 bg-indigo-100 rounded-lg group-hover:bg-indigo-200 transition-colors">
-                  <Building2 size={18} className="text-indigo-700" />
-                </div>
-                <div className="text-left flex-1">
-                  <p className="text-sm font-medium text-slate-800">Add Supplier</p>
-                  <p className="text-xs text-slate-500">Create new supplier</p>
-                </div>
-              </button>
-
-              <button
-                onClick={() => {
-                  sessionStorage.setItem('openVehicleForm', 'true');
-                  setCurrentPage('vehicles');
-                  setShowQuickLinks(false);
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors group"
-              >
-                <div className="p-2 bg-cyan-100 rounded-lg group-hover:bg-cyan-200 transition-colors">
-                  <TruckIcon size={18} className="text-cyan-700" />
-                </div>
-                <div className="text-left flex-1">
-                  <p className="text-sm font-medium text-slate-800">Add Vehicle</p>
-                  <p className="text-xs text-slate-500">Register new vehicle</p>
-                </div>
-              </button>
-            </div>
-          )}
-        </div>
       </div>
 
       {/* Quick Actions */}
@@ -450,6 +309,149 @@ export function Dashboard({ setCurrentPage }: DashboardProps) {
               })}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      {/* Fixed Position Quick Links Button */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <div className="relative">
+          <button
+            onClick={() => setShowQuickLinks(!showQuickLinks)}
+            className="relative w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group"
+            aria-label="Quick Links"
+          >
+            {/* Hamburger Icon with Animation */}
+            <div className="relative w-6 h-6">
+              <span
+                className={`absolute left-0 w-6 h-0.5 bg-white rounded-full transition-all duration-300 ease-in-out ${
+                  showQuickLinks ? 'top-3 rotate-45' : 'top-1'
+                }`}
+              />
+              <span
+                className={`absolute left-0 top-3 w-6 h-0.5 bg-white rounded-full transition-all duration-300 ease-in-out ${
+                  showQuickLinks ? 'opacity-0 scale-0' : 'opacity-100 scale-100'
+                }`}
+              />
+              <span
+                className={`absolute left-0 w-6 h-0.5 bg-white rounded-full transition-all duration-300 ease-in-out ${
+                  showQuickLinks ? 'top-3 -rotate-45' : 'top-5'
+                }`}
+              />
+            </div>
+          </button>
+
+          {/* Quick Links Dropdown Menu - Opens Above */}
+          {showQuickLinks && (
+            <div className="absolute right-0 bottom-16 w-72 bg-white rounded-xl shadow-2xl border border-slate-200 py-2 z-50 animate-in fade-in slide-in-from-bottom-2 duration-200">
+              <div className="px-4 py-2 border-b border-slate-100">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Quick Actions</p>
+              </div>
+              
+              <button
+                onClick={() => {
+                  sessionStorage.setItem('openExpenseForm', 'true');
+                  setCurrentPage('expenses');
+                  setShowQuickLinks(false);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors group"
+              >
+                <div className="p-2 bg-amber-100 rounded-lg group-hover:bg-amber-200 transition-colors">
+                  <Receipt size={18} className="text-amber-700" />
+                </div>
+                <div className="text-left flex-1">
+                  <p className="text-sm font-medium text-slate-800">New Expense</p>
+                  <p className="text-xs text-slate-500">Record a new expense</p>
+                </div>
+              </button>
+
+              <button
+                onClick={() => {
+                  sessionStorage.setItem('openCustomerPaymentForm', 'true');
+                  setCurrentPage('customer-payments');
+                  setShowQuickLinks(false);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors group"
+              >
+                <div className="p-2 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
+                  <IndianRupee size={18} className="text-green-700" />
+                </div>
+                <div className="text-left flex-1">
+                  <p className="text-sm font-medium text-slate-800">Record Customer Payment</p>
+                  <p className="text-xs text-slate-500">Receive payment from customer</p>
+                </div>
+              </button>
+
+              <button
+                onClick={() => {
+                  sessionStorage.setItem('openSupplierPaymentForm', 'true');
+                  setCurrentPage('supplier-payments');
+                  setShowQuickLinks(false);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors group"
+              >
+                <div className="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
+                  <IndianRupee size={18} className="text-blue-700" />
+                </div>
+                <div className="text-left flex-1">
+                  <p className="text-sm font-medium text-slate-800">Record Supplier Payment</p>
+                  <p className="text-xs text-slate-500">Make payment to supplier</p>
+                </div>
+              </button>
+
+              <div className="border-t border-slate-100 my-2" />
+
+              <button
+                onClick={() => {
+                  sessionStorage.setItem('openCustomerForm', 'true');
+                  setCurrentPage('customers');
+                  setShowQuickLinks(false);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors group"
+              >
+                <div className="p-2 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
+                  <UserPlus size={18} className="text-purple-700" />
+                </div>
+                <div className="text-left flex-1">
+                  <p className="text-sm font-medium text-slate-800">Add Customer</p>
+                  <p className="text-xs text-slate-500">Create new customer</p>
+                </div>
+              </button>
+
+              <button
+                onClick={() => {
+                  sessionStorage.setItem('openSupplierForm', 'true');
+                  setCurrentPage('suppliers');
+                  setShowQuickLinks(false);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors group"
+              >
+                <div className="p-2 bg-indigo-100 rounded-lg group-hover:bg-indigo-200 transition-colors">
+                  <Building2 size={18} className="text-indigo-700" />
+                </div>
+                <div className="text-left flex-1">
+                  <p className="text-sm font-medium text-slate-800">Add Supplier</p>
+                  <p className="text-xs text-slate-500">Create new supplier</p>
+                </div>
+              </button>
+
+              <button
+                onClick={() => {
+                  sessionStorage.setItem('openVehicleForm', 'true');
+                  setCurrentPage('vehicles');
+                  setShowQuickLinks(false);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors group"
+              >
+                <div className="p-2 bg-cyan-100 rounded-lg group-hover:bg-cyan-200 transition-colors">
+                  <TruckIcon size={18} className="text-cyan-700" />
+                </div>
+                <div className="text-left flex-1">
+                  <p className="text-sm font-medium text-slate-800">Add Vehicle</p>
+                  <p className="text-xs text-slate-500">Register new vehicle</p>
+                </div>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
