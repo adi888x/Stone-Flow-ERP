@@ -269,48 +269,7 @@ export function Dashboard({ setCurrentPage }: DashboardProps) {
         </div>
       </div>
 
-      {/* Recent Transactions */}
-      <div className="bg-white rounded-xl border border-slate-200 p-5">
-        <h3 className="font-semibold text-slate-800 mb-4">Recent Sales</h3>
-        <div className="overflow-x-auto">
-          <table className="erp-table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Slip No.</th>
-                <th>Customer</th>
-                <th>Vehicle</th>
-                <th>Qty (BRASS)</th>
-                <th>Amount</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {store.sales.slice(0, 8).map(sale => {
-                const customer = store.customers.find(c => c.id === sale.customer_id);
-                const vehicle = store.vehicles.find(v => v.id === sale.vehicle_id);
-                return (
-                  <tr key={sale.id}>
-                    <td>{sale.date}</td>
-                    <td className="font-mono text-xs">{sale.sale_slip_number}</td>
-                    <td>{customer?.customer_name}</td>
-                    <td className="font-mono text-xs">{vehicle?.vehicle_number}</td>
-                    <td>{sale.quantity_brass.toFixed(2)}</td>
-                    <td className="font-medium">{formatCurrency(sale.total_amount)}</td>
-                    <td>
-                      <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
-                        sale.transaction_state === 'FULFILLED' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                      }`}>
-                        {sale.transaction_state}
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
+
 
       {/* Fixed Position Quick Links Button */}
       <div className="fixed bottom-12 right-12 z-50">
