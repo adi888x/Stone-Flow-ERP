@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useStoreContext } from '../App';
 import { Plus, Search, Printer, Eye, X, MoreVertical } from 'lucide-react';
-import type { PaperSize } from '../types';
+
 
 function formatCurrency(n: number) { return '₹' + n.toLocaleString('en-IN'); }
 
@@ -22,7 +22,7 @@ export function SalesPage() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [dateFilter, setDateFilter] = useState('today');
-  const [paperSize, setPaperSize] = useState<PaperSize>('80mm');
+
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [menuPosition, setMenuPosition] = useState<'top' | 'bottom'>('bottom');
   const menuRef = useRef<HTMLDivElement>(null);
@@ -403,8 +403,6 @@ export function SalesPage() {
         <ReceiptPreviewModal
           sale={previewSale}
           store={store}
-          paperSize={paperSize}
-          setPaperSize={setPaperSize}
           onClose={() => { setShowPreview(false); setPreviewSale(null); }}
         />
       )}
@@ -412,7 +410,7 @@ export function SalesPage() {
   );
 }
 
-function ReceiptPreviewModal({ sale, store, paperSize, setPaperSize, onClose }: { sale: any; store: any; paperSize: PaperSize; setPaperSize: (s: PaperSize) => void; onClose: () => void }) {
+function ReceiptPreviewModal({ sale, store, onClose }: { sale: any; store: any; onClose: () => void }) {
   const customer = store.customers.find((c: any) => c.id === sale.customer_id);
   const vehicle = store.vehicles.find((v: any) => v.id === sale.vehicle_id);
   const material = store.materials.find((m: any) => m.id === sale.material_id);
@@ -423,17 +421,11 @@ function ReceiptPreviewModal({ sale, store, paperSize, setPaperSize, onClose }: 
       <div className="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto animate-slide-in">
         <div className="p-4 border-b border-slate-200 flex items-center justify-between">
           <h2 className="text-lg font-bold text-slate-800">Sale Slip Preview</h2>
-          <div className="flex items-center gap-2">
-            <select value={paperSize} onChange={e => setPaperSize(e.target.value as PaperSize)} className="px-2 py-1 border border-slate-300 rounded text-xs">
-              <option value="58mm">58mm</option>
-              <option value="80mm">80mm</option>
-            </select>
-            <button onClick={onClose} className="p-1.5 hover:bg-slate-100 rounded"><X size={18} /></button>
-          </div>
+          <button onClick={onClose} className="p-1.5 hover:bg-slate-100 rounded"><X size={18} /></button>
         </div>
 
         <div className="p-6 flex justify-center bg-slate-100">
-          <div className={paperSize === '58mm' ? 'receipt-58mm bg-white shadow-lg' : 'receipt-80mm bg-white shadow-lg'}>
+          <div className="receipt-80mm bg-white shadow-lg">
             <div className="text-center border-b border-dashed border-slate-400 pb-2 mb-2">
               <p className="font-bold text-sm">{settings.business_name}</p>
               <p className="text-xs">{settings.business_address}</p>
