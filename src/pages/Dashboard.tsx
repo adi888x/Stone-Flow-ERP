@@ -313,7 +313,7 @@ export function Dashboard({ setCurrentPage }: DashboardProps) {
       </div>
 
       {/* Fixed Position Quick Links Button */}
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-12 right-12 z-50">
         <div className="relative">
           <button
             onClick={() => setShowQuickLinks(!showQuickLinks)}
