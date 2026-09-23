@@ -13,6 +13,15 @@ export function CustomerPaymentsPage() {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  // Auto-open form if coming from dashboard quick action
+  useEffect(() => {
+    const shouldOpen = sessionStorage.getItem('openCustomerPaymentForm');
+    if (shouldOpen === 'true') {
+      setShowForm(true);
+      sessionStorage.removeItem('openCustomerPaymentForm');
+    }
+  }, []);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -204,6 +213,15 @@ export function SupplierPaymentsPage() {
   const [error, setError] = useState('');
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  // Auto-open form if coming from dashboard quick action
+  useEffect(() => {
+    const shouldOpen = sessionStorage.getItem('openSupplierPaymentForm');
+    if (shouldOpen === 'true') {
+      setShowForm(true);
+      sessionStorage.removeItem('openSupplierPaymentForm');
+    }
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

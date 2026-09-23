@@ -13,6 +13,15 @@ export function ExpensesPage() {
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [formDate, setFormDate] = useState(new Date().toISOString().split('T')[0]);
+
+  // Auto-open form if coming from dashboard quick action
+  React.useEffect(() => {
+    const shouldOpen = sessionStorage.getItem('openExpenseForm');
+    if (shouldOpen === 'true') {
+      setShowForm(true);
+      sessionStorage.removeItem('openExpenseForm');
+    }
+  }, []);
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
   const [workArea, setWorkArea] = useState('');

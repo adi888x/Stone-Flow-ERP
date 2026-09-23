@@ -10,6 +10,15 @@ export function SuppliersPage() {
   const [selectedSupplier, setSelectedSupplier] = useState<string | null>(null);
   const [form, setForm] = useState({ supplier_name: '', mobile: '', alternate_mobile: '', address: '', contact_person: '', notes: '' });
   const [error, setError] = useState('');
+
+  // Auto-open form if coming from dashboard quick action
+  React.useEffect(() => {
+    const shouldOpen = sessionStorage.getItem('openSupplierForm');
+    if (shouldOpen === 'true') {
+      setShowForm(true);
+      sessionStorage.removeItem('openSupplierForm');
+    }
+  }, []);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 

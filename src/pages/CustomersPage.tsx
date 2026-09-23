@@ -12,6 +12,15 @@ export function CustomersPage() {
   const [selectedCustomer, setSelectedCustomer] = useState<string | null>(null);
   const [form, setForm] = useState({ customer_name: '', mobile: '', alternate_mobile: '', address: '', contact_person: '', notes: '' });
   const [error, setError] = useState('');
+
+  // Auto-open form if coming from dashboard quick action
+  React.useEffect(() => {
+    const shouldOpen = sessionStorage.getItem('openCustomerForm');
+    if (shouldOpen === 'true') {
+      setShowForm(true);
+      sessionStorage.removeItem('openCustomerForm');
+    }
+  }, []);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 

@@ -10,6 +10,15 @@ export function VehiclesPage() {
   const [ownerFilter, setOwnerFilter] = useState<'all' | 'customer' | 'supplier'>('all');
   const [form, setForm] = useState({ vehicle_number: '', vehicle_type: 'TIPPER', owner_name: '', customer_id: '', supplier_id: '', driver_name: '', driver_mobile: '', capacity: '' });
   const [error, setError] = useState('');
+
+  // Auto-open form if coming from dashboard quick action
+  React.useEffect(() => {
+    const shouldOpen = sessionStorage.getItem('openVehicleForm');
+    if (shouldOpen === 'true') {
+      setShowForm(true);
+      sessionStorage.removeItem('openVehicleForm');
+    }
+  }, []);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
