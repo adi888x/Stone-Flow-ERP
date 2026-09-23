@@ -40,7 +40,7 @@ export function FilterBar({
   children,
 }: FilterBarProps) {
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-4 space-y-4">
+    <div className="bg-white rounded-xl border border-slate-200 p-4">
       {/* Search and Actions Row */}
       <div className="flex flex-wrap gap-3">
         <div className="flex-1 min-w-[250px] relative">
@@ -53,6 +53,9 @@ export function FilterBar({
             className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
+
+        {/* Additional Filters (children) - rendered after search, before date range */}
+        {children}
 
         <div className="flex flex-wrap gap-3">
           <DateRangeFilter
@@ -77,13 +80,6 @@ export function FilterBar({
           </button>
         </div>
       </div>
-
-      {/* Additional Filters (children) */}
-      {children && (
-        <div className="flex flex-wrap gap-3">
-          {children}
-        </div>
-      )}
     </div>
   );
 }
