@@ -1,6 +1,8 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useStoreContext } from '../App';
 import { Plus, Search, X, MoreVertical, Edit } from 'lucide-react';
+import { FilterBar } from '../components/FilterBar';
+import { ReportExportService } from '../services/ReportExportService';
 
 function formatCurrency(n: number) { return '₹' + n.toLocaleString('en-IN'); }
 
@@ -12,6 +14,10 @@ export function ExpensesPage() {
   const [showForm, setShowForm] = useState(false);
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [fromDate, setFromDate] = useState(new Date().toISOString().split('T')[0]);
+  const [toDate, setToDate] = useState(new Date().toISOString().split('T')[0]);
+  const [dateRange, setDateRange] = useState('today');
   const [formDate, setFormDate] = useState(new Date().toISOString().split('T')[0]);
 
   // Auto-open form if coming from dashboard quick action
@@ -54,13 +60,76 @@ export function ExpensesPage() {
     };
   }, [openMenu]);
 
+  const handleReset = () => {
+    setSearch('');
+    setCategoryFilter('');
+    setFromDate(new Date().toISOString().split('T')[0]);
+    setToDate(new Date().toISOString().split('T')[0]);
+    setDateRange('today');
+    setStatusFilter('all');
+  };
+
+  const handleExportExcel = async () => {
+    const exportData = {
+      reportType: 'expenses' as const,
+      reportTitle: 'Expense Report',
+      dateRange: { from: fromDate, to: toDate },
+      status: statusFilter === 'all' ? 'All' : statusFilter,
+      generatedBy: store.currentUser?.full_name || 'Unknown',
+      data: filtered.map(expense => ({
+        date: expense.date,
+        expense_number: expense.expense_number,
+        category: expense.category,
+        description_of_work: expense.description_of_work,
+        vendor_or_person: expense.vendor_or_person,
+        paid_by: expense.paid_by,
+        payment_mode: expense.payment_mode,
+        amount: expense.amount,
+        transaction_state: expense.transaction_state,
+        created_by: expense.created_by
+      })),
+      totals: {
+        amount: filtered.reduce((sum, e) => sum + e.amount, 0)
+      }
+    };
+    await ReportExportService.exportToExcel(exportData);
+  };
+
+  const handleExportPDF = () => {
+    const exportData = {
+      reportType: 'expenses' as const,
+      reportTitle: 'Expense Report',
+      dateRange: { from: fromDate, to: toDate },
+      status: statusFilter === 'all' ? 'All' : statusFilter,
+      generatedBy: store.currentUser?.full_name || 'Unknown',
+      data: filtered.map(expense => ({
+        date: expense.date,
+        expense_number: expense.expense_number,
+        category: expense.category,
+        description_of_work: expense.description_of_work,
+        vendor_or_person: expense.vendor_or_person,
+        paid_by: expense.paid_by,
+        payment_mode: expense.payment_mode,
+        amount: expense.amount,
+        transaction_state: expense.transaction_state,
+        created_by: expense.created_by
+      })),
+      totals: {
+        amount: filtered.reduce((sum, e) => sum + e.amount, 0)
+      }
+    };
+    ReportExportService.exportToPDF(exportData);
+  };
+
   const filtered = useMemo(() => {
     return store.expenses.filter(e => {
       const matchSearch = !search || e.description_of_work.toLowerCase().includes(search.toLowerCase()) || e.vendor_or_person.toLowerCase().includes(search.toLowerCase()) || e.expense_number.toLowerCase().includes(search.toLowerCase());
       const matchCategory = !categoryFilter || e.category === categoryFilter;
-      return matchSearch && matchCategory && e.transaction_state === 'FULFILLED';
+      const matchStatus = statusFilter === 'all' || e.transaction_state === statusFilter;
+      const matchDate = e.date >= fromDate && e.date <= toDate;
+      return matchSearch && matchCategory && matchStatus && matchDate;
     });
-  }, [store.expenses, search, categoryFilter]);
+  }, [store.expenses, search, categoryFilter, statusFilter, fromDate, toDate]);
 
   const handleSave = () => {
     setError('');
@@ -124,12 +193,26 @@ export function ExpensesPage() {
         </div>
         {success && <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">{success}</div>}
 
-        {/* Filters - Fixed */}
-        <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap gap-3">
-          <div className="relative flex-1 min-w-[200px]">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input type="text" placeholder="Search expenses..." value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm" />
-          </div>
+        {/* Filter Bar */}
+        <FilterBar
+          searchValue={search}
+          searchPlaceholder="Search expenses..."
+          onSearchChange={setSearch}
+          fromDate={fromDate}
+          toDate={toDate}
+          dateRange={dateRange}
+          onFromDateChange={setFromDate}
+          onToDateChange={setToDate}
+          onDateRangeChange={setDateRange}
+          status={statusFilter}
+          onStatusChange={setStatusFilter}
+          onExportExcel={handleExportExcel}
+          onExportPDF={handleExportPDF}
+          onReset={handleReset}
+        />
+
+        {/* Category Filter */}
+        <div className="bg-white rounded-xl border border-slate-200 p-4">
           <select value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm">
             <option value="">All Categories</option>
             {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -207,8 +290,9 @@ export function ExpensesPage() {
             </tbody>
           </table>
         </div>
-        <div className="px-4 py-3 border-t border-slate-200 bg-slate-50 text-sm text-slate-600">
-          Total: {formatCurrency(filtered.reduce((s, e) => s + e.amount, 0))} | {filtered.length} expenses
+        <div className="px-4 py-3 border-t border-slate-200 bg-slate-50 text-sm text-slate-600 flex flex-wrap gap-4">
+          <span>Showing {filtered.length} expenses</span>
+          <span className="font-medium text-blue-700">Total Expense: {formatCurrency(filtered.reduce((s, e) => s + e.amount, 0))}</span>
         </div>
       </div>
 

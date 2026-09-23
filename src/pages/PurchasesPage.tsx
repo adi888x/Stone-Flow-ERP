@@ -2,6 +2,8 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useStoreContext } from '../App';
 import { Plus, Search, Eye, X, Printer, MoreVertical } from 'lucide-react';
 import { SearchableSelect } from '../components/SearchableSelect';
+import { FilterBar } from '../components/FilterBar';
+import { ReportExportService } from '../services/ReportExportService';
 
 function formatCurrency(n: number) { return '₹' + n.toLocaleString('en-IN'); }
 
@@ -20,6 +22,10 @@ export function PurchasesPage() {
   const [showPreview, setShowPreview] = useState(false);
   const [previewPurchase, setPreviewPurchase] = useState<any>(null);
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [fromDate, setFromDate] = useState(new Date().toISOString().split('T')[0]);
+  const [toDate, setToDate] = useState(new Date().toISOString().split('T')[0]);
+  const [dateRange, setDateRange] = useState('today');
   const [formDate, setFormDate] = useState(new Date().toISOString().split('T')[0]);
   const [supplierId, setSupplierId] = useState('');
   const [vehicleId, setVehicleId] = useState('');
@@ -50,12 +56,87 @@ export function PurchasesPage() {
     };
   }, [openMenu]);
 
+  const handleReset = () => {
+    setSearch('');
+    setFromDate(new Date().toISOString().split('T')[0]);
+    setToDate(new Date().toISOString().split('T')[0]);
+    setDateRange('today');
+    setStatusFilter('all');
+  };
+
+  const handleExportExcel = async () => {
+    const exportData = {
+      reportType: 'purchases' as const,
+      reportTitle: 'Purchase Report',
+      dateRange: { from: fromDate, to: toDate },
+      status: statusFilter === 'all' ? 'All' : statusFilter,
+      generatedBy: store.currentUser?.full_name || 'Unknown',
+      data: filteredPurchases.map(purchase => {
+        const supplier = store.suppliers.find(s => s.id === purchase.supplier_id);
+        const vehicle = store.vehicles.find(v => v.id === purchase.vehicle_id);
+        const material = store.materials.find(m => m.id === purchase.material_id);
+        return {
+          date: purchase.date,
+          slip_number: purchase.purchase_slip_number,
+          party_name: supplier?.supplier_name || '',
+          vehicle_number: vehicle?.vehicle_number || '',
+          material_name: material?.material_name || '',
+          quantity_brass: purchase.quantity_brass,
+          rate: purchase.rate,
+          total_amount: purchase.total_amount,
+          transaction_state: purchase.transaction_state,
+          created_by: purchase.created_by
+        };
+      }),
+      totals: {
+        quantity: filteredPurchases.reduce((sum, p) => sum + p.quantity_brass, 0),
+        amount: filteredPurchases.reduce((sum, p) => sum + p.total_amount, 0)
+      }
+    };
+    await ReportExportService.exportToExcel(exportData);
+  };
+
+  const handleExportPDF = () => {
+    const exportData = {
+      reportType: 'purchases' as const,
+      reportTitle: 'Purchase Report',
+      dateRange: { from: fromDate, to: toDate },
+      status: statusFilter === 'all' ? 'All' : statusFilter,
+      generatedBy: store.currentUser?.full_name || 'Unknown',
+      data: filteredPurchases.map(purchase => {
+        const supplier = store.suppliers.find(s => s.id === purchase.supplier_id);
+        const vehicle = store.vehicles.find(v => v.id === purchase.vehicle_id);
+        const material = store.materials.find(m => m.id === purchase.material_id);
+        return {
+          date: purchase.date,
+          slip_number: purchase.purchase_slip_number,
+          party_name: supplier?.supplier_name || '',
+          vehicle_number: vehicle?.vehicle_number || '',
+          material_name: material?.material_name || '',
+          quantity_brass: purchase.quantity_brass,
+          rate: purchase.rate,
+          total_amount: purchase.total_amount,
+          transaction_state: purchase.transaction_state,
+          created_by: purchase.created_by
+        };
+      }),
+      totals: {
+        quantity: filteredPurchases.reduce((sum, p) => sum + p.quantity_brass, 0),
+        amount: filteredPurchases.reduce((sum, p) => sum + p.total_amount, 0)
+      }
+    };
+    ReportExportService.exportToPDF(exportData);
+  };
+
   const filteredPurchases = useMemo(() => {
     return store.purchases.filter(p => {
       const supplier = store.suppliers.find(s => s.id === p.supplier_id);
-      return !search || supplier?.supplier_name.toLowerCase().includes(search.toLowerCase()) || p.purchase_slip_number.toLowerCase().includes(search.toLowerCase());
+      const matchSearch = !search || supplier?.supplier_name.toLowerCase().includes(search.toLowerCase()) || p.purchase_slip_number.toLowerCase().includes(search.toLowerCase());
+      const matchStatus = statusFilter === 'all' || p.transaction_state === statusFilter;
+      const matchDate = p.date >= fromDate && p.date <= toDate;
+      return matchSearch && matchStatus && matchDate;
     });
-  }, [store.purchases, store.suppliers, search]);
+  }, [store.purchases, store.suppliers, search, statusFilter, fromDate, toDate]);
 
   const supplierVehicles = useMemo(() => {
     if (!supplierId) return [];
@@ -113,13 +194,23 @@ export function PurchasesPage() {
 
         {success && <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">{success}</div>}
 
-        {/* Filters - Fixed */}
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
-          <div className="relative">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input type="text" placeholder="Search by supplier or slip no..." value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm" />
-          </div>
-        </div>
+        {/* Filter Bar */}
+        <FilterBar
+          searchValue={search}
+          searchPlaceholder="Search by supplier or slip no..."
+          onSearchChange={setSearch}
+          fromDate={fromDate}
+          toDate={toDate}
+          dateRange={dateRange}
+          onFromDateChange={setFromDate}
+          onToDateChange={setToDate}
+          onDateRangeChange={setDateRange}
+          status={statusFilter}
+          onStatusChange={setStatusFilter}
+          onExportExcel={handleExportExcel}
+          onExportPDF={handleExportPDF}
+          onReset={handleReset}
+        />
       </div>
 
       {/* Table - Scrollable */}
@@ -200,8 +291,10 @@ export function PurchasesPage() {
             </tbody>
           </table>
         </div>
-        <div className="px-4 py-3 border-t border-slate-200 bg-slate-50 text-sm text-slate-600">
-          Showing {filteredPurchases.length} purchases | Total: {formatCurrency(filteredPurchases.reduce((s, x) => s + (x.transaction_state === 'FULFILLED' ? x.total_amount : 0), 0))}
+        <div className="px-4 py-3 border-t border-slate-200 bg-slate-50 text-sm text-slate-600 flex flex-wrap gap-4">
+          <span>Showing {filteredPurchases.length} purchases</span>
+          <span className="font-medium">Total Quantity: {filteredPurchases.reduce((s, x) => s + x.quantity_brass, 0).toFixed(2)} BRASS</span>
+          <span className="font-medium text-blue-700">Total Purchase: {formatCurrency(filteredPurchases.reduce((s, x) => s + x.total_amount, 0))}</span>
         </div>
       </div>
 

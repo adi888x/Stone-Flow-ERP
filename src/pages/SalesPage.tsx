@@ -2,6 +2,8 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useStoreContext } from '../App';
 import { Plus, Search, Printer, Eye, X, MoreVertical } from 'lucide-react';
 import { SearchableSelect } from '../components/SearchableSelect';
+import { FilterBar } from '../components/FilterBar';
+import { ReportExportService } from '../services/ReportExportService';
 
 function formatCurrency(n: number) { return '₹' + n.toLocaleString('en-IN'); }
 
@@ -20,8 +22,10 @@ export function SalesPage() {
   const [showPreview, setShowPreview] = useState(false);
   const [previewSale, setPreviewSale] = useState<any>(null);
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [dateFilter, setDateFilter] = useState('today');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [fromDate, setFromDate] = useState(new Date().toISOString().split('T')[0]);
+  const [toDate, setToDate] = useState(new Date().toISOString().split('T')[0]);
+  const [dateRange, setDateRange] = useState('today');
 
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [menuPosition, setMenuPosition] = useState<'top' | 'bottom'>('bottom');
@@ -55,41 +59,87 @@ export function SalesPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const getDateRange = () => {
-    const today = new Date();
-    const todayStr = today.toISOString().split('T')[0];
-    
-    switch (dateFilter) {
-      case 'today':
-        return { start: todayStr, end: todayStr };
-      case 'yesterday':
-        const yesterday = new Date(today);
-        yesterday.setDate(yesterday.getDate() - 1);
-        const yesterdayStr = yesterday.toISOString().split('T')[0];
-        return { start: yesterdayStr, end: yesterdayStr };
-      case 'week':
-        const weekStart = new Date(today);
-        weekStart.setDate(weekStart.getDate() - 7);
-        return { start: weekStart.toISOString().split('T')[0], end: todayStr };
-      case 'month':
-        const monthStart = new Date(today);
-        monthStart.setMonth(monthStart.getMonth() - 1);
-        return { start: monthStart.toISOString().split('T')[0], end: todayStr };
-      default:
-        return { start: todayStr, end: todayStr };
-    }
+  const handleReset = () => {
+    setSearch('');
+    setFromDate(new Date().toISOString().split('T')[0]);
+    setToDate(new Date().toISOString().split('T')[0]);
+    setDateRange('today');
+    setStatusFilter('all');
+  };
+
+  const handleExportExcel = async () => {
+    const exportData = {
+      reportType: 'sales' as const,
+      reportTitle: 'Sales Report',
+      dateRange: { from: fromDate, to: toDate },
+      status: statusFilter === 'all' ? 'All' : statusFilter,
+      generatedBy: store.currentUser?.full_name || 'Unknown',
+      data: filteredSales.map(sale => {
+        const customer = store.customers.find(c => c.id === sale.customer_id);
+        const vehicle = store.vehicles.find(v => v.id === sale.vehicle_id);
+        const material = store.materials.find(m => m.id === sale.material_id);
+        return {
+          date: sale.date,
+          slip_number: sale.sale_slip_number,
+          party_name: customer?.customer_name || '',
+          vehicle_number: vehicle?.vehicle_number || '',
+          material_name: material?.material_name || '',
+          quantity_brass: sale.quantity_brass,
+          rate: sale.rate,
+          total_amount: sale.total_amount,
+          transaction_state: sale.transaction_state,
+          created_by: sale.created_by
+        };
+      }),
+      totals: {
+        quantity: filteredSales.reduce((sum, s) => sum + s.quantity_brass, 0),
+        amount: filteredSales.reduce((sum, s) => sum + s.total_amount, 0)
+      }
+    };
+    await ReportExportService.exportToExcel(exportData);
+  };
+
+  const handleExportPDF = () => {
+    const exportData = {
+      reportType: 'sales' as const,
+      reportTitle: 'Sales Report',
+      dateRange: { from: fromDate, to: toDate },
+      status: statusFilter === 'all' ? 'All' : statusFilter,
+      generatedBy: store.currentUser?.full_name || 'Unknown',
+      data: filteredSales.map(sale => {
+        const customer = store.customers.find(c => c.id === sale.customer_id);
+        const vehicle = store.vehicles.find(v => v.id === sale.vehicle_id);
+        const material = store.materials.find(m => m.id === sale.material_id);
+        return {
+          date: sale.date,
+          slip_number: sale.sale_slip_number,
+          party_name: customer?.customer_name || '',
+          vehicle_number: vehicle?.vehicle_number || '',
+          material_name: material?.material_name || '',
+          quantity_brass: sale.quantity_brass,
+          rate: sale.rate,
+          total_amount: sale.total_amount,
+          transaction_state: sale.transaction_state,
+          created_by: sale.created_by
+        };
+      }),
+      totals: {
+        quantity: filteredSales.reduce((sum, s) => sum + s.quantity_brass, 0),
+        amount: filteredSales.reduce((sum, s) => sum + s.total_amount, 0)
+      }
+    };
+    ReportExportService.exportToPDF(exportData);
   };
 
   const filteredSales = useMemo(() => {
-    const { start, end } = getDateRange();
     return store.sales.filter(s => {
       const customer = store.customers.find(c => c.id === s.customer_id);
       const matchSearch = !search || customer?.customer_name.toLowerCase().includes(search.toLowerCase()) || s.sale_slip_number.toLowerCase().includes(search.toLowerCase());
-      const matchStatus = !statusFilter || s.transaction_state === statusFilter;
-      const matchDate = s.date >= start && s.date <= end;
+      const matchStatus = statusFilter === 'all' || s.transaction_state === statusFilter;
+      const matchDate = s.date >= fromDate && s.date <= toDate;
       return matchSearch && matchStatus && matchDate;
     });
-  }, [store.sales, store.customers, search, statusFilter, dateFilter]);
+  }, [store.sales, store.customers, search, statusFilter, fromDate, toDate]);
 
   const customerVehicles = useMemo(() => {
     if (!customerId) return [];
@@ -199,32 +249,23 @@ export function SalesPage() {
 
         {success && <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">{success}</div>}
 
-        {/* Filters - Fixed */}
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
-          <div className="flex flex-wrap gap-3">
-            <div className="relative flex-1 min-w-[200px]">
-              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Search by customer or slip no..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm"
-              />
-            </div>
-            <select value={dateFilter} onChange={e => setDateFilter(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm">
-              <option value="today">Today's Sales</option>
-              <option value="yesterday">Yesterday's Sales</option>
-              <option value="week">This Week</option>
-              <option value="month">This Month</option>
-            </select>
-            <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="px-3 py-2 border border-slate-300 rounded-lg text-sm">
-              <option value="">All Status</option>
-              <option value="FULFILLED">Fulfilled</option>
-              <option value="CANCELLED">Cancelled</option>
-            </select>
-          </div>
-        </div>
+        {/* Filter Bar */}
+        <FilterBar
+          searchValue={search}
+          searchPlaceholder="Search by customer or slip no..."
+          onSearchChange={setSearch}
+          fromDate={fromDate}
+          toDate={toDate}
+          dateRange={dateRange}
+          onFromDateChange={setFromDate}
+          onToDateChange={setToDate}
+          onDateRangeChange={setDateRange}
+          status={statusFilter}
+          onStatusChange={setStatusFilter}
+          onExportExcel={handleExportExcel}
+          onExportPDF={handleExportPDF}
+          onReset={handleReset}
+        />
       </div>
 
       {/* Table - Scrollable */}
@@ -314,8 +355,10 @@ export function SalesPage() {
             </tbody>
           </table>
         </div>
-        <div className="px-4 py-3 border-t border-slate-200 bg-slate-50 text-sm text-slate-600">
-          Showing {filteredSales.length} of {store.sales.length} sales | Total: {formatCurrency(filteredSales.reduce((s, x) => s + (x.transaction_state === 'FULFILLED' ? x.total_amount : 0), 0))}
+        <div className="px-4 py-3 border-t border-slate-200 bg-slate-50 text-sm text-slate-600 flex flex-wrap gap-4">
+          <span>Showing {filteredSales.length} of {store.sales.length} sales</span>
+          <span className="font-medium">Total Quantity: {filteredSales.reduce((s, x) => s + x.quantity_brass, 0).toFixed(2)} BRASS</span>
+          <span className="font-medium text-blue-700">Total Sales: {formatCurrency(filteredSales.reduce((s, x) => s + x.total_amount, 0))}</span>
         </div>
       </div>
 
