@@ -69,11 +69,11 @@ export function CustomerPaymentsPage() {
                 return (
                   <tr key={p.id}>
                     <td>{p.date}</td>
-                    <td className="font-mono text-base">{p.payment_number}</td>
+                    <td className="font-mono text-sm">{p.payment_number}</td>
                     <td className="font-medium">{customer?.customer_name}</td>
                     <td className="font-bold text-green-700">{formatCurrency(p.amount)}</td>
                     <td><span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-xs">{p.payment_mode}</span></td>
-                    <td className="font-mono text-base">{p.reference_number || '—'}</td>
+                    <td className="font-mono text-sm">{p.reference_number || '—'}</td>
                     <td>{p.created_by}</td>
                     <td className="relative">
                       <div ref={openMenu === p.id ? menuRef : null} className="relative">
@@ -207,11 +207,11 @@ export function SupplierPaymentsPage() {
                 return (
                   <tr key={p.id}>
                     <td>{p.date}</td>
-                    <td className="font-mono text-base">{p.payment_number}</td>
+                    <td className="font-mono text-sm">{p.payment_number}</td>
                     <td className="font-medium">{supplier?.supplier_name}</td>
                     <td className="font-bold text-red-700">{formatCurrency(p.amount)}</td>
                     <td><span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-xs">{p.payment_mode}</span></td>
-                    <td className="font-mono text-base">{p.reference_number || '—'}</td>
+                    <td className="font-mono text-sm">{p.reference_number || '—'}</td>
                     <td>{p.created_by}</td>
                     <td className="relative">
                       <div ref={openMenu === p.id ? menuRef : null} className="relative">
