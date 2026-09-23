@@ -3,7 +3,7 @@ import { useStoreContext } from '../App';
 import {
   LayoutDashboard, ShoppingCart, Package, Receipt, Users, Truck,
   Boxes, IndianRupee, CreditCard, BookOpen, BarChart3, UserCog,
-  ClipboardList, Settings, Menu, X, LogOut, Wallet
+  ClipboardList, Settings, Menu, X, LogOut, Wallet, Search
 } from 'lucide-react';
 
 type Page = 'dashboard' | 'sales' | 'purchases' | 'expenses' | 'cash-bank' | 'customers' | 'suppliers' |
@@ -13,6 +13,7 @@ type Page = 'dashboard' | 'sales' | 'purchases' | 'expenses' | 'cash-bank' | 'cu
 interface LayoutProps {
   currentPage: Page;
   setCurrentPage: (page: Page) => void;
+  onOpenSearch?: () => void;
   children: React.ReactNode;
 }
 
@@ -37,7 +38,7 @@ const NAV_ITEMS: { id: Page; label: string; icon: React.ReactNode; roles: string
   { id: 'settings', label: 'Settings', icon: <Settings size={18} />, roles: ['ADMIN'] },
 ];
 
-export function Layout({ currentPage, setCurrentPage, children }: LayoutProps) {
+export function Layout({ currentPage, setCurrentPage, onOpenSearch, children }: LayoutProps) {
   const store = useStoreContext();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -129,6 +130,17 @@ export function Layout({ currentPage, setCurrentPage, children }: LayoutProps) {
           {children}
         </main>
       </div>
+
+      {/* Mobile Search Button */}
+      {onOpenSearch && (
+        <button
+          onClick={onOpenSearch}
+          className="lg:hidden fixed bottom-6 left-6 z-40 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all active:scale-95"
+          aria-label="Search"
+        >
+          <Search size={24} />
+        </button>
+      )}
     </div>
   );
 }
