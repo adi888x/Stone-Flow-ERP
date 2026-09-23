@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useStoreContext } from '../App';
 import { Plus, Search, Printer, Eye, X, MoreVertical } from 'lucide-react';
-
+import { SearchableSelect } from '../components/SearchableSelect';
 
 function formatCurrency(n: number) { return '₹' + n.toLocaleString('en-IN'); }
 
@@ -54,7 +54,6 @@ export function SalesPage() {
   const [notes, setNotes] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [customerSearch, setCustomerSearch] = useState('');
 
   const getDateRange = () => {
     const today = new Date();
@@ -170,7 +169,6 @@ export function SalesPage() {
   const resetForm = () => {
     setFormDate(new Date().toISOString().split('T')[0]);
     setCustomerId(''); setVehicleId(''); setMaterialId(''); setQuantity(''); setRate(''); setNotes(''); setError('');
-    setCustomerSearch('');
   };
 
   const handleCancelSale = (saleId: string) => {
@@ -337,46 +335,57 @@ export function SalesPage() {
                 <input type="date" value={formDate} onChange={e => setFormDate(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Customer *</label>
-                <input
-                  type="text"
-                  placeholder="Search customer..."
-                  value={customerSearch}
-                  onChange={e => setCustomerSearch(e.target.value)}
-                  className="w-full px-3 py-2 mb-2 border border-slate-300 rounded-lg text-sm"
-                />
-                <select value={customerId} onChange={e => handleCustomerChange(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
-                  <option value="">Select customer</option>
-                  {store.customers.filter(c => c.is_active && c.customer_name.toLowerCase().includes(customerSearch.toLowerCase())).map(c => <option key={c.id} value={c.id}>{c.customer_name}</option>)}
-                </select>
-              </div>
+              <SearchableSelect
+                label="Customer"
+                value={customerId}
+                onChange={handleCustomerChange}
+                options={store.customers.filter(c => c.is_active).map(c => ({
+                  value: c.id,
+                  label: c.customer_name,
+                  sublabel: `Mobile: ${c.mobile}`
+                }))}
+                placeholder="Select customer"
+                searchPlaceholder="Search customer..."
+                required
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Vehicle *</label>
-                {customerId ? (
-                  customerVehicles.length > 0 ? (
-                    <select value={vehicleId} onChange={e => setVehicleId(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
-                      <option value="">Select vehicle</option>
-                      {customerVehicles.map(v => <option key={v.id} value={v.id}>{v.vehicle_number} — {v.driver_name}</option>)}
-                    </select>
-                  ) : (
-                    <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm">
-                      No vehicles registered for this customer.
-                    </div>
-                  )
+              {customerId ? (
+                customerVehicles.length > 0 ? (
+                  <SearchableSelect
+                    label="Vehicle"
+                    value={vehicleId}
+                    onChange={setVehicleId}
+                    options={customerVehicles.map(v => ({
+                      value: v.id,
+                      label: v.vehicle_number,
+                      sublabel: `Driver: ${v.driver_name} • Type: ${v.vehicle_type}`
+                    }))}
+                    placeholder="Select vehicle"
+                    searchPlaceholder="Search vehicle..."
+                    required
+                  />
                 ) : (
-                  <div className="px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-400 bg-slate-50">Select a customer first</div>
-                )}
-              </div>
+                  <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm">
+                    No vehicles registered for this customer.
+                  </div>
+                )
+              ) : (
+                <div className="px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-400 bg-slate-50">Select a customer first</div>
+              )}
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Material *</label>
-                <select value={materialId} onChange={e => handleMaterialChange(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
-                  <option value="">Select material</option>
-                  {store.materials.filter(m => m.is_active).map(m => <option key={m.id} value={m.id}>{m.material_name}</option>)}
-                </select>
-              </div>
+              <SearchableSelect
+                label="Material"
+                value={materialId}
+                onChange={handleMaterialChange}
+                options={store.materials.filter(m => m.is_active).map(m => ({
+                  value: m.id,
+                  label: m.material_name,
+                  sublabel: `Category: ${m.category}`
+                }))}
+                placeholder="Select material"
+                searchPlaceholder="Search material..."
+                required
+              />
 
               <div className="grid grid-cols-2 gap-4">
                 <div>

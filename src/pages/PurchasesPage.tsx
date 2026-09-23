@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useStoreContext } from '../App';
 import { Plus, Search, Eye, X, Printer, MoreVertical } from 'lucide-react';
+import { SearchableSelect } from '../components/SearchableSelect';
 
 function formatCurrency(n: number) { return '₹' + n.toLocaleString('en-IN'); }
 
@@ -28,7 +29,6 @@ export function PurchasesPage() {
   const [notes, setNotes] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [supplierSearch, setSupplierSearch] = useState('');
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [menuPosition, setMenuPosition] = useState<'top' | 'bottom'>('bottom');
   const menuRef = useRef<HTMLDivElement>(null);
@@ -95,7 +95,6 @@ export function PurchasesPage() {
     setSuccess('Purchase slip created successfully!');
     setFormDate(new Date().toISOString().split('T')[0]);
     setSupplierId(''); setVehicleId(''); setMaterialId(''); setQuantity(''); setRate(''); setNotes('');
-    setSupplierSearch('');
   };
 
   return (
@@ -220,38 +219,49 @@ export function PurchasesPage() {
                 <label className="block text-sm font-medium text-slate-700 mb-1">Date *</label>
                 <input type="date" value={formDate} onChange={e => setFormDate(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Supplier *</label>
-                <input
-                  type="text"
-                  placeholder="Search supplier..."
-                  value={supplierSearch}
-                  onChange={e => setSupplierSearch(e.target.value)}
-                  className="w-full px-3 py-2 mb-2 border border-slate-300 rounded-lg text-sm"
-                />
-                <select value={supplierId} onChange={e => { setSupplierId(e.target.value); setVehicleId(''); }} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
-                  <option value="">Select supplier</option>
-                  {store.suppliers.filter(s => s.is_active && s.supplier_name.toLowerCase().includes(supplierSearch.toLowerCase())).map(s => <option key={s.id} value={s.id}>{s.supplier_name}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Vehicle *</label>
-                {supplierId ? (
-                  supplierVehicles.length > 0 ? (
-                    <select value={vehicleId} onChange={e => setVehicleId(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
-                      <option value="">Select vehicle</option>
-                      {supplierVehicles.map(v => <option key={v.id} value={v.id}>{v.vehicle_number} — {v.driver_name}</option>)}
-                    </select>
-                  ) : <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm">No vehicles registered for this supplier.</div>
-                ) : <div className="px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-400 bg-slate-50">Select a supplier first</div>}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Raw Material *</label>
-                <select value={materialId} onChange={e => setMaterialId(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
-                  <option value="">Select material</option>
-                  {store.materials.filter(m => m.is_active).map(m => <option key={m.id} value={m.id}>{m.material_name}</option>)}
-                </select>
-              </div>
+              <SearchableSelect
+                label="Supplier"
+                value={supplierId}
+                onChange={(value) => { setSupplierId(value); setVehicleId(''); }}
+                options={store.suppliers.filter(s => s.is_active).map(s => ({
+                  value: s.id,
+                  label: s.supplier_name,
+                  sublabel: `Mobile: ${s.mobile}`
+                }))}
+                placeholder="Select supplier"
+                searchPlaceholder="Search supplier..."
+                required
+              />
+              {supplierId ? (
+                supplierVehicles.length > 0 ? (
+                  <SearchableSelect
+                    label="Vehicle"
+                    value={vehicleId}
+                    onChange={setVehicleId}
+                    options={supplierVehicles.map(v => ({
+                      value: v.id,
+                      label: v.vehicle_number,
+                      sublabel: `Driver: ${v.driver_name} • Type: ${v.vehicle_type}`
+                    }))}
+                    placeholder="Select vehicle"
+                    searchPlaceholder="Search vehicle..."
+                    required
+                  />
+                ) : <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm">No vehicles registered for this supplier.</div>
+              ) : <div className="px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-400 bg-slate-50">Select a supplier first</div>}
+              <SearchableSelect
+                label="Raw Material"
+                value={materialId}
+                onChange={setMaterialId}
+                options={store.materials.filter(m => m.is_active).map(m => ({
+                  value: m.id,
+                  label: m.material_name,
+                  sublabel: `Category: ${m.category}`
+                }))}
+                placeholder="Select material"
+                searchPlaceholder="Search material..."
+                required
+              />
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Quantity (BRASS) *</label>

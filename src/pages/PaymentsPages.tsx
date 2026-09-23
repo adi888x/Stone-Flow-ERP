@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useStoreContext } from '../App';
 import { Plus, Search, X, MoreVertical, Edit, Trash2 } from 'lucide-react';
+import { SearchableSelect } from '../components/SearchableSelect';
 function formatCurrency(n: number) { return '₹' + n.toLocaleString('en-IN'); }
 const PAYMENT_MODES = ['Cash', 'UPI', 'Bank Transfer', 'Cheque'] as const;
 
@@ -8,7 +9,6 @@ export function CustomerPaymentsPage() {
   const store = useStoreContext();
   const [showForm, setShowForm] = useState(false);
   const [search, setSearch] = useState('');
-  const [customerSearch, setCustomerSearch] = useState('');
   const [form, setForm] = useState({ date: new Date().toISOString().split('T')[0], customer_id: '', amount: '', payment_mode: 'Cash' as typeof PAYMENT_MODES[number], account_id: '', reference_number: '', notes: '' });
   const [error, setError] = useState('');
   const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -94,7 +94,6 @@ export function CustomerPaymentsPage() {
     
     setShowForm(false); 
     setForm({ date: new Date().toISOString().split('T')[0], customer_id: '', amount: '', payment_mode: 'Cash', account_id: '', reference_number: '', notes: '' });
-    setCustomerSearch('');
   };
 
   return (
@@ -177,35 +176,38 @@ export function CustomerPaymentsPage() {
             <div className="p-5 space-y-4">
               {error && <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{error}</div>}
               <div><label className="block text-sm font-medium text-slate-700 mb-1">Date *</label><input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" /></div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Customer *</label>
-                <input
-                  type="text"
-                  placeholder="Search customer..."
-                  value={customerSearch}
-                  onChange={e => setCustomerSearch(e.target.value)}
-                  className="w-full px-3 py-2 mb-2 border border-slate-300 rounded-lg text-sm"
-                />
-                <select value={form.customer_id} onChange={e => setForm({ ...form, customer_id: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
-                  <option value="">Select customer</option>
-                  {store.customers.filter(c => c.is_active && c.customer_name.toLowerCase().includes(customerSearch.toLowerCase())).map(c => <option key={c.id} value={c.id}>{c.customer_name} — Outstanding: {formatCurrency(store.getCustomerOutstanding(c.id))}</option>)}
-                </select>
-              </div>
+              <SearchableSelect
+                label="Customer"
+                value={form.customer_id}
+                onChange={(value) => setForm({ ...form, customer_id: value })}
+                options={store.customers.filter(c => c.is_active).map(c => ({
+                  value: c.id,
+                  label: c.customer_name,
+                  sublabel: `Mobile: ${c.mobile} • Outstanding: ${formatCurrency(store.getCustomerOutstanding(c.id))}`
+                }))}
+                placeholder="Select customer"
+                searchPlaceholder="Search customer..."
+                required
+              />
               <div><label className="block text-sm font-medium text-slate-700 mb-1">Amount (₹) *</label><input type="number" value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} placeholder="0.00" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" /></div>
               <div className="grid grid-cols-2 gap-4">
                 <div><label className="block text-sm font-medium text-slate-700 mb-1">Payment Mode *</label><select value={form.payment_mode} onChange={e => setForm({ ...form, payment_mode: e.target.value as any, account_id: '' })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">{PAYMENT_MODES.map(m => <option key={m} value={m}>{m}</option>)}</select></div>
                 <div><label className="block text-sm font-medium text-slate-700 mb-1">Reference No.</label><input type="text" value={form.reference_number} onChange={e => setForm({ ...form, reference_number: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" /></div>
               </div>
               {form.payment_mode !== 'Cash' && (
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Account *</label>
-                  <select value={form.account_id} onChange={e => setForm({ ...form, account_id: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
-                    <option value="">Select account</option>
-                    {store.cashBankAccounts.filter(acc => acc.is_active && acc.account_type === 'BANK').map(acc => (
-                      <option key={acc.id} value={acc.id}>{acc.account_name} — {formatCurrency(acc.balance)}</option>
-                    ))}
-                  </select>
-                </div>
+                <SearchableSelect
+                  label="Account"
+                  value={form.account_id}
+                  onChange={(value) => setForm({ ...form, account_id: value })}
+                  options={store.cashBankAccounts.filter(acc => acc.is_active && acc.account_type === 'BANK').map(acc => ({
+                    value: acc.id,
+                    label: acc.account_name,
+                    sublabel: `${acc.bank_name || ''} • Balance: ${formatCurrency(acc.balance)}`
+                  }))}
+                  placeholder="Select account"
+                  searchPlaceholder="Search account..."
+                  required
+                />
               )}
               <div><label className="block text-sm font-medium text-slate-700 mb-1">Notes</label><textarea value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} rows={2} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" /></div>
             </div>
@@ -224,7 +226,6 @@ export function SupplierPaymentsPage() {
   const store = useStoreContext();
   const [showForm, setShowForm] = useState(false);
   const [search, setSearch] = useState('');
-  const [supplierSearch, setSupplierSearch] = useState('');
   const [form, setForm] = useState({ date: new Date().toISOString().split('T')[0], supplier_id: '', amount: '', payment_mode: 'Cash' as typeof PAYMENT_MODES[number], account_id: '', reference_number: '', notes: '' });
   const [error, setError] = useState('');
   const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -310,7 +311,6 @@ export function SupplierPaymentsPage() {
     
     setShowForm(false); 
     setForm({ date: new Date().toISOString().split('T')[0], supplier_id: '', amount: '', payment_mode: 'Cash', account_id: '', reference_number: '', notes: '' });
-    setSupplierSearch('');
   };
 
   return (
@@ -393,35 +393,38 @@ export function SupplierPaymentsPage() {
             <div className="p-5 space-y-4">
               {error && <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{error}</div>}
               <div><label className="block text-sm font-medium text-slate-700 mb-1">Date *</label><input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" /></div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Supplier *</label>
-                <input
-                  type="text"
-                  placeholder="Search supplier..."
-                  value={supplierSearch}
-                  onChange={e => setSupplierSearch(e.target.value)}
-                  className="w-full px-3 py-2 mb-2 border border-slate-300 rounded-lg text-sm"
-                />
-                <select value={form.supplier_id} onChange={e => setForm({ ...form, supplier_id: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
-                  <option value="">Select supplier</option>
-                  {store.suppliers.filter(s => s.is_active && s.supplier_name.toLowerCase().includes(supplierSearch.toLowerCase())).map(s => <option key={s.id} value={s.id}>{s.supplier_name} — Outstanding: {formatCurrency(store.getSupplierOutstanding(s.id))}</option>)}
-                </select>
-              </div>
+              <SearchableSelect
+                label="Supplier"
+                value={form.supplier_id}
+                onChange={(value) => setForm({ ...form, supplier_id: value })}
+                options={store.suppliers.filter(s => s.is_active).map(s => ({
+                  value: s.id,
+                  label: s.supplier_name,
+                  sublabel: `Mobile: ${s.mobile} • Outstanding: ${formatCurrency(store.getSupplierOutstanding(s.id))}`
+                }))}
+                placeholder="Select supplier"
+                searchPlaceholder="Search supplier..."
+                required
+              />
               <div><label className="block text-sm font-medium text-slate-700 mb-1">Amount (₹) *</label><input type="number" value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} placeholder="0.00" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" /></div>
               <div className="grid grid-cols-2 gap-4">
                 <div><label className="block text-sm font-medium text-slate-700 mb-1">Payment Mode *</label><select value={form.payment_mode} onChange={e => setForm({ ...form, payment_mode: e.target.value as any, account_id: '' })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">{PAYMENT_MODES.map(m => <option key={m} value={m}>{m}</option>)}</select></div>
                 <div><label className="block text-sm font-medium text-slate-700 mb-1">Reference No.</label><input type="text" value={form.reference_number} onChange={e => setForm({ ...form, reference_number: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" /></div>
               </div>
               {form.payment_mode !== 'Cash' && (
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Account *</label>
-                  <select value={form.account_id} onChange={e => setForm({ ...form, account_id: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
-                    <option value="">Select account</option>
-                    {store.cashBankAccounts.filter(acc => acc.is_active && acc.account_type === 'BANK').map(acc => (
-                      <option key={acc.id} value={acc.id}>{acc.account_name} — {formatCurrency(acc.balance)}</option>
-                    ))}
-                  </select>
-                </div>
+                <SearchableSelect
+                  label="Account"
+                  value={form.account_id}
+                  onChange={(value) => setForm({ ...form, account_id: value })}
+                  options={store.cashBankAccounts.filter(acc => acc.is_active && acc.account_type === 'BANK').map(acc => ({
+                    value: acc.id,
+                    label: acc.account_name,
+                    sublabel: `${acc.bank_name || ''} • Balance: ${formatCurrency(acc.balance)}`
+                  }))}
+                  placeholder="Select account"
+                  searchPlaceholder="Search account..."
+                  required
+                />
               )}
               <div><label className="block text-sm font-medium text-slate-700 mb-1">Notes</label><textarea value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} rows={2} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" /></div>
             </div>
