@@ -5,7 +5,8 @@ import { useState, useCallback } from 'react';
 import type {
   User, Customer, Supplier, Vehicle, Material, CustomerRate,
   Sale, PurchaseEntry, Expense, CustomerPayment, SupplierPayment,
-  AuditLog, PrinterSettings, AppSettings, TransactionState
+  AuditLog, PrinterSettings, AppSettings, TransactionState,
+  CashBankAccount, CashBankTransaction, Transfer
 } from '../types';
 
 // ---- Utility ----
@@ -158,6 +159,170 @@ const DEMO_AUDIT_LOGS: AuditLog[] = [
   { id: 'a2', user_id: 'u1', user_name: 'Admin User', action: 'CREATE', entity_type: 'Customer', entity_id: 'c1', new_data: { name: 'ABC Constructions' }, created_at: now() },
 ];
 
+// Demo Cash & Bank Data
+const DEMO_ACCOUNTS: CashBankAccount[] = [
+  {
+    id: 'acc1',
+    account_name: 'Cash in Hand',
+    account_type: 'CASH',
+    balance: 150000,
+    opening_balance: 150000,
+    opening_balance_date: '2026-01-01',
+    is_active: true,
+    created_at: '2026-01-01',
+    updated_at: '2026-01-01',
+  },
+  {
+    id: 'acc2',
+    account_name: 'HDFC Current Account',
+    account_type: 'BANK',
+    balance: 2846370,
+    opening_balance: 1000000,
+    opening_balance_date: '2026-01-01',
+    account_holder_name: 'Balaji Wash Sand',
+    account_number: '501000123456',
+    ifsc_code: 'HDFC0001234',
+    bank_name: 'HDFC Bank',
+    branch_name: 'Pune Main Branch',
+    is_active: true,
+    created_at: '2026-01-01',
+    updated_at: '2026-01-01',
+  },
+  {
+    id: 'acc3',
+    account_name: 'ICICI Savings Account',
+    account_type: 'BANK',
+    balance: 1520000,
+    opening_balance: 500000,
+    opening_balance_date: '2026-01-01',
+    account_holder_name: 'Balaji Wash Sand',
+    account_number: '001201234567',
+    ifsc_code: 'ICIC0005678',
+    bank_name: 'ICICI Bank',
+    branch_name: 'Mumbai Central',
+    is_active: true,
+    created_at: '2026-01-01',
+    updated_at: '2026-01-01',
+  },
+];
+
+const DEMO_TRANSACTIONS: CashBankTransaction[] = [
+  {
+    id: 'txn1',
+    transaction_id: 'TXN-2026-000001',
+    account_id: 'acc1',
+    date: '2026-01-15',
+    transaction_type: 'Add Money',
+    mode: 'Adjustment',
+    paid_amount: 0,
+    received_amount: 150000,
+    balance_after: 150000,
+    notes: 'Opening balance',
+    source_type: 'manual',
+    created_by: 'Admin',
+    created_at: '2026-01-15',
+  },
+  {
+    id: 'txn2',
+    transaction_id: 'TXN-2026-000002',
+    account_id: 'acc2',
+    date: '2026-01-15',
+    transaction_type: 'Add Money',
+    mode: 'Adjustment',
+    paid_amount: 0,
+    received_amount: 1000000,
+    balance_after: 1000000,
+    notes: 'Opening balance',
+    source_type: 'manual',
+    created_by: 'Admin',
+    created_at: '2026-01-15',
+  },
+  {
+    id: 'txn3',
+    transaction_id: 'TXN-2026-000003',
+    account_id: 'acc2',
+    date: '2026-01-20',
+    transaction_type: 'Payment In',
+    party_type: 'customer',
+    party_id: 'c1',
+    party_name: 'ABC Constructions',
+    mode: 'UPI',
+    paid_amount: 0,
+    received_amount: 500000,
+    balance_after: 1500000,
+    reference_no: 'UPI123456',
+    source_type: 'customer_payment',
+    source_id: 'cp1',
+    created_by: 'Accountant',
+    created_at: '2026-01-20',
+  },
+  {
+    id: 'txn4',
+    transaction_id: 'TXN-2026-000004',
+    account_id: 'acc2',
+    date: '2026-01-25',
+    transaction_type: 'Payment Out',
+    party_type: 'supplier',
+    party_id: 's1',
+    party_name: 'River Sand Co.',
+    mode: 'Bank Transfer',
+    paid_amount: 750000,
+    received_amount: 0,
+    balance_after: 750000,
+    reference_no: 'NEFT789',
+    source_type: 'supplier_payment',
+    source_id: 'sp1',
+    created_by: 'Accountant',
+    created_at: '2026-01-25',
+  },
+  {
+    id: 'txn5',
+    transaction_id: 'TXN-2026-000005',
+    account_id: 'acc2',
+    date: '2026-02-01',
+    transaction_type: 'Transfer In',
+    mode: 'Bank Transfer',
+    paid_amount: 0,
+    received_amount: 2000000,
+    balance_after: 2750000,
+    notes: 'Transfer from ICICI',
+    transfer_id: 'trf1',
+    source_type: 'transfer',
+    created_by: 'Admin',
+    created_at: '2026-02-01',
+  },
+  {
+    id: 'txn6',
+    transaction_id: 'TXN-2026-000006',
+    account_id: 'acc3',
+    date: '2026-02-01',
+    transaction_type: 'Transfer Out',
+    mode: 'Bank Transfer',
+    paid_amount: 2000000,
+    received_amount: 0,
+    balance_after: -500000,
+    notes: 'Transfer to HDFC',
+    transfer_id: 'trf1',
+    source_type: 'transfer',
+    created_by: 'Admin',
+    created_at: '2026-02-01',
+  },
+];
+
+const DEMO_TRANSFERS: Transfer[] = [
+  {
+    id: 'trf1',
+    transfer_id: 'TRF-2026-000001',
+    from_account_id: 'acc3',
+    to_account_id: 'acc2',
+    amount: 2000000,
+    date: '2026-02-01',
+    notes: 'Transfer from ICICI to HDFC',
+    created_by: 'Admin',
+    created_at: '2026-02-01',
+  },
+];
+
 // ---- Store Hook ----
 export function useStore() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -174,6 +339,9 @@ export function useStore() {
   const [supplierPayments, setSupplierPayments] = useState<SupplierPayment[]>(DEMO_SUPPLIER_PAYMENTS);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>(DEMO_AUDIT_LOGS);
   const [users] = useState<User[]>(DEMO_USERS);
+  const [cashBankAccounts, setCashBankAccounts] = useState<CashBankAccount[]>(DEMO_ACCOUNTS);
+  const [cashBankTransactions, setCashBankTransactions] = useState<CashBankTransaction[]>(DEMO_TRANSACTIONS);
+  const [transfers, setTransfers] = useState<Transfer[]>(DEMO_TRANSFERS);
 
   const [printerSettings] = useState<PrinterSettings>({
     printer_name: 'Thermal Printer',
@@ -383,17 +551,122 @@ export function useStore() {
     return vehicles.filter(v => v.supplier_id === supplierId && v.is_active);
   }, [vehicles]);
 
+  // Cash & Bank operations
+  const addCashBankAccount = useCallback((data: Omit<CashBankAccount, 'id' | 'created_at' | 'updated_at'>) => {
+    const acc: CashBankAccount = { ...data, id: uid(), created_at: now(), updated_at: now() };
+    setCashBankAccounts(prev => [...prev, acc]);
+    addAuditLog('CREATE', 'CashBankAccount', acc.id, undefined, { account_name: acc.account_name });
+    return acc;
+  }, [addAuditLog]);
+
+  const updateCashBankAccount = useCallback((id: string, data: Partial<CashBankAccount>) => {
+    setCashBankAccounts(prev => prev.map(acc => acc.id === id ? { ...acc, ...data, updated_at: now() } : acc));
+    addAuditLog('UPDATE', 'CashBankAccount', id, undefined, data);
+  }, [addAuditLog]);
+
+  const deactivateCashBankAccount = useCallback((id: string) => {
+    setCashBankAccounts(prev => prev.map(acc => acc.id === id ? { ...acc, is_active: false, updated_at: now() } : acc));
+    addAuditLog('DEACTIVATE', 'CashBankAccount', id, undefined, { is_active: false });
+  }, [addAuditLog]);
+
+  const addCashBankTransaction = useCallback((data: Omit<CashBankTransaction, 'id' | 'transaction_id' | 'created_at'>) => {
+    const txnId = generateSlipNumber('TXN', cashBankTransactions.map(t => t.transaction_id));
+    const txn: CashBankTransaction = { ...data, id: uid(), transaction_id: txnId, created_at: now() };
+    setCashBankTransactions(prev => [...prev, txn]);
+    
+    // Update account balance
+    const balanceChange = txn.received_amount - txn.paid_amount;
+    setCashBankAccounts(prev => prev.map(acc => {
+      if (acc.id === txn.account_id) {
+        return { ...acc, balance: acc.balance + balanceChange, updated_at: now() };
+      }
+      return acc;
+    }));
+    
+    addAuditLog('CREATE', 'CashBankTransaction', txn.id, undefined, { 
+      transaction_id: txnId, 
+      amount: balanceChange 
+    });
+    return txn;
+  }, [cashBankTransactions, addAuditLog]);
+
+  const addTransfer = useCallback((data: Omit<Transfer, 'id' | 'transfer_id' | 'created_at'>) => {
+    const trfId = generateSlipNumber('TRF', transfers.map(t => t.transfer_id));
+    const trf: Transfer = { ...data, id: uid(), transfer_id: trfId, created_at: now() };
+    setTransfers(prev => [...prev, trf]);
+    
+    // Create transaction for source account (money out)
+    const sourceTxn = addCashBankTransaction({
+      account_id: data.from_account_id,
+      date: data.date,
+      transaction_type: 'Transfer Out',
+      mode: 'Bank Transfer',
+      paid_amount: data.amount,
+      received_amount: 0,
+      balance_after: 0, // Will be calculated
+      notes: data.notes,
+      transfer_id: trfId,
+      source_type: 'transfer',
+      created_by: data.created_by,
+    });
+    
+    // Create transaction for destination account (money in)
+    const destTxn = addCashBankTransaction({
+      account_id: data.to_account_id,
+      date: data.date,
+      transaction_type: 'Transfer In',
+      mode: 'Bank Transfer',
+      paid_amount: 0,
+      received_amount: data.amount,
+      balance_after: 0, // Will be calculated
+      notes: data.notes,
+      transfer_id: trfId,
+      source_type: 'transfer',
+      created_by: data.created_by,
+    });
+    
+    addAuditLog('CREATE', 'Transfer', trf.id, undefined, { 
+      transfer_id: trfId, 
+      amount: data.amount,
+      from: data.from_account_id,
+      to: data.to_account_id
+    });
+    
+    return { transfer: trf, sourceTxn, destTxn };
+  }, [transfers, addCashBankTransaction, addAuditLog]);
+
+  const getAccountBalance = useCallback((accountId: string) => {
+    const account = cashBankAccounts.find(acc => acc.id === accountId);
+    return account?.balance || 0;
+  }, [cashBankAccounts]);
+
+  const getTotalBalance = useCallback(() => {
+    return cashBankAccounts
+      .filter(acc => acc.is_active)
+      .reduce((sum, acc) => sum + acc.balance, 0);
+  }, [cashBankAccounts]);
+
+  const getAccountTransactions = useCallback((accountId: string) => {
+    return cashBankTransactions
+      .filter(txn => txn.account_id === accountId)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }, [cashBankTransactions]);
+
   return {
     currentUser, isDemoMode, login, enterDemo, logout,
     customers, suppliers, vehicles, materials, customerRates,
     sales, purchases, expenses, customerPayments, supplierPayments,
     auditLogs, users, printerSettings, appSettings,
+    cashBankAccounts, cashBankTransactions, transfers,
     addCustomer, updateCustomer, addSupplier, updateSupplier,
     addVehicle, addMaterial, addRate,
     addSale, cancelSale, addPurchase, addExpense,
     addCustomerPayment, addSupplierPayment,
+    addCashBankAccount, updateCashBankAccount, deactivateCashBankAccount,
+    addCashBankTransaction, addTransfer,
     getCustomerOutstanding, getSupplierOutstanding,
     getApplicableRate, getCustomerVehicles, getSupplierVehicles,
+    getAccountBalance, getTotalBalance, getAccountTransactions,
   };
 }
 

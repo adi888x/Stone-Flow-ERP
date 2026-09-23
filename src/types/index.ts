@@ -214,3 +214,58 @@ export interface AppSettings {
   currency: string;
   unit: string;
 }
+
+export type AccountType = 'CASH' | 'BANK';
+export type TransactionType = 'Payment In' | 'Payment Out' | 'Sale' | 'Purchase' | 'Add Money' | 'Reduce Money' | 'Transfer In' | 'Transfer Out';
+
+export interface CashBankAccount {
+  id: string;
+  account_name: string;
+  account_type: AccountType;
+  balance: number;
+  opening_balance: number;
+  opening_balance_date: string;
+  account_holder_name?: string;
+  account_number?: string;
+  ifsc_code?: string;
+  bank_name?: string;
+  branch_name?: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CashBankTransaction {
+  id: string;
+  transaction_id: string;
+  account_id: string;
+  date: string;
+  transaction_type: TransactionType;
+  party_type?: 'customer' | 'supplier' | 'other';
+  party_id?: string;
+  party_name?: string;
+  mode: string;
+  paid_amount: number;
+  received_amount: number;
+  balance_after: number;
+  reference_no?: string;
+  notes?: string;
+  source_type?: string;
+  source_id?: string;
+  transfer_id?: string;
+  created_by: string;
+  created_at: string;
+}
+
+export interface Transfer {
+  id: string;
+  transfer_id: string;
+  from_account_id: string;
+  to_account_id: string;
+  amount: number;
+  date: string;
+  reference_no?: string;
+  notes?: string;
+  created_by: string;
+  created_at: string;
+}

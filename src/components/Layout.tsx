@@ -3,10 +3,10 @@ import { useStoreContext } from '../App';
 import {
   LayoutDashboard, ShoppingCart, Package, Receipt, Users, Truck,
   Boxes, IndianRupee, CreditCard, BookOpen, BarChart3, UserCog,
-  ClipboardList, Settings, Menu, X, LogOut
+  ClipboardList, Settings, Menu, X, LogOut, Wallet
 } from 'lucide-react';
 
-type Page = 'dashboard' | 'sales' | 'purchases' | 'expenses' | 'customers' | 'suppliers' |
+type Page = 'dashboard' | 'sales' | 'purchases' | 'expenses' | 'cash-bank' | 'customers' | 'suppliers' |
   'vehicles' | 'materials' | 'rates' | 'customer-payments' | 'supplier-payments' |
   'customer-ledger' | 'supplier-ledger' | 'reports' | 'users' | 'audit-logs' | 'settings';
 
@@ -21,6 +21,7 @@ const NAV_ITEMS: { id: Page; label: string; icon: React.ReactNode; roles: string
   { id: 'sales', label: 'Sales', icon: <ShoppingCart size={18} />, roles: ['ADMIN', 'COUNTER_OPERATOR', 'ACCOUNTANT', 'MANAGER'] },
   { id: 'purchases', label: 'Raw Material Inward', icon: <Package size={18} />, roles: ['ADMIN', 'COUNTER_OPERATOR', 'ACCOUNTANT'] },
   { id: 'expenses', label: 'Expenses', icon: <Receipt size={18} />, roles: ['ADMIN', 'ACCOUNTANT', 'MANAGER'] },
+  { id: 'cash-bank', label: 'Cash & Bank', icon: <Wallet size={18} />, roles: ['ADMIN', 'ACCOUNTANT', 'MANAGER'] },
   { id: 'customer-payments', label: 'Customer Payments', icon: <CreditCard size={18} />, roles: ['ADMIN', 'ACCOUNTANT'] },
   { id: 'supplier-payments', label: 'Supplier Payments', icon: <IndianRupee size={18} />, roles: ['ADMIN', 'ACCOUNTANT'] },
   { id: 'customers', label: 'Customers', icon: <Users size={18} />, roles: ['ADMIN', 'COUNTER_OPERATOR', 'MANAGER'] },

@@ -5,6 +5,7 @@ import { Dashboard } from './pages/Dashboard';
 import { SalesPage } from './pages/SalesPage';
 import { PurchasesPage } from './pages/PurchasesPage';
 import { ExpensesPage } from './pages/ExpensesPage';
+import { CashBankPage } from './pages/CashBankPage';
 import { CustomersPage } from './pages/CustomersPage';
 import { SuppliersPage } from './pages/SuppliersPage';
 import { VehiclesPage } from './pages/VehiclesPage';
@@ -28,7 +29,7 @@ export function useStoreContext() {
   return ctx;
 }
 
-type Page = 'dashboard' | 'sales' | 'purchases' | 'expenses' | 'customers' | 'suppliers' |
+type Page = 'dashboard' | 'sales' | 'purchases' | 'expenses' | 'cash-bank' | 'customers' | 'suppliers' |
   'vehicles' | 'materials' | 'rates' | 'customer-payments' | 'supplier-payments' |
   'customer-ledger' | 'supplier-ledger' | 'reports' | 'users' | 'audit-logs' | 'settings';
 
@@ -44,6 +45,7 @@ export default function App() {
         {currentPage === 'sales' && <SalesPage />}
         {currentPage === 'purchases' && <PurchasesPage />}
         {currentPage === 'expenses' && <ExpensesPage />}
+        {currentPage === 'cash-bank' && <CashBankPage />}
         {currentPage === 'customers' && <CustomersPage />}
         {currentPage === 'suppliers' && <SuppliersPage />}
         {currentPage === 'vehicles' && <VehiclesPage />}
