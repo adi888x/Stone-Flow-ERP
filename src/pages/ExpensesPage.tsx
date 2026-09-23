@@ -5,7 +5,7 @@ import { Plus, Search, X, MoreVertical, Edit } from 'lucide-react';
 function formatCurrency(n: number) { return '₹' + n.toLocaleString('en-IN'); }
 
 const CATEGORIES = ['Plant Maintenance', 'Machine Repair', 'Pump Repair', 'Electrical', 'Welding', 'Spare Parts', 'Vehicle Repair', 'Labour', 'Fuel', 'Office', 'Miscellaneous'];
-const PAYMENT_MODES = ['Cash', 'UPI', 'Bank Transfer', 'Card', 'Other'] as const;
+const PAYMENT_MODES = ['Cash', 'UPI', 'Bank Transfer', 'Cheque'] as const;
 
 export function ExpensesPage() {
   const store = useStoreContext();
@@ -19,6 +19,7 @@ export function ExpensesPage() {
   const [vendor, setVendor] = useState('');
   const [paidBy, setPaidBy] = useState('');
   const [paymentMode, setPaymentMode] = useState<typeof PAYMENT_MODES[number]>('Cash');
+  const [accountId, setAccountId] = useState('');
   const [amount, setAmount] = useState('');
   const [notes, setNotes] = useState('');
   const [error, setError] = useState('');
@@ -57,9 +58,18 @@ export function ExpensesPage() {
     if (!category) { setError('Category is required.'); return; }
     if (!description) { setError('Description is required.'); return; }
     if (!amount || parseFloat(amount) <= 0) { setError('Amount must be greater than 0.'); return; }
+    if (paymentMode !== 'Cash' && !accountId) { setError('Please select an account for this payment mode.'); return; }
     if (store.isDemoMode) { setError('Demo mode is read-only.'); return; }
 
-    store.addExpense({
+    // Determine the account to use
+    const selectedAccountId = paymentMode === 'Cash' 
+      ? store.cashBankAccounts.find(acc => acc.account_type === 'CASH')?.id 
+      : accountId;
+    
+    if (!selectedAccountId) { setError('Account not found.'); return; }
+
+    // Create the expense
+    const expense = store.addExpense({
       date: formDate,
       time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true }),
       category, description_of_work: description, work_area: workArea,
@@ -67,9 +77,27 @@ export function ExpensesPage() {
       payment_mode: paymentMode, amount: parseFloat(amount), notes,
       created_by: store.currentUser?.full_name || '',
     });
+    
+    // Create Cash & Bank transaction
+    store.addCashBankTransaction({
+      account_id: selectedAccountId,
+      date: formDate,
+      transaction_type: 'Payment Out',
+      party_type: 'other',
+      party_name: vendor || 'Expense',
+      mode: paymentMode,
+      paid_amount: parseFloat(amount),
+      received_amount: 0,
+      balance_after: 0, // Will be calculated by the store
+      notes: `${category}: ${description}${notes ? ' - ' + notes : ''}`,
+      source_type: 'expense',
+      source_id: expense.id,
+      created_by: store.currentUser?.full_name || ''
+    });
+    
     setShowForm(false); setSuccess('Expense saved successfully!');
     setFormDate(new Date().toISOString().split('T')[0]);
-    setCategory(''); setDescription(''); setWorkArea(''); setVendor(''); setPaidBy(''); setAmount(''); setNotes('');
+    setCategory(''); setDescription(''); setWorkArea(''); setVendor(''); setPaidBy(''); setAccountId(''); setAmount(''); setNotes('');
   };
 
   return (
@@ -222,11 +250,22 @@ export function ExpensesPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Payment Mode *</label>
-                  <select value={paymentMode} onChange={e => setPaymentMode(e.target.value as any)} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                  <select value={paymentMode} onChange={e => { setPaymentMode(e.target.value as any); setAccountId(''); }} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
                     {PAYMENT_MODES.map(m => <option key={m} value={m}>{m}</option>)}
                   </select>
                 </div>
               </div>
+              {paymentMode !== 'Cash' && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Account *</label>
+                  <select value={accountId} onChange={e => setAccountId(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                    <option value="">Select account</option>
+                    {store.cashBankAccounts.filter(acc => acc.is_active && acc.account_type === 'BANK').map(acc => (
+                      <option key={acc.id} value={acc.id}>{acc.account_name} — {formatCurrency(acc.balance)}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Notes</label>
                 <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={2} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" />

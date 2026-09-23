@@ -2,13 +2,13 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useStoreContext } from '../App';
 import { Plus, Search, X, MoreVertical, Edit, Trash2 } from 'lucide-react';
 function formatCurrency(n: number) { return '₹' + n.toLocaleString('en-IN'); }
-const PAYMENT_MODES = ['Cash', 'UPI', 'Bank Transfer', 'Card', 'Other'] as const;
+const PAYMENT_MODES = ['Cash', 'UPI', 'Bank Transfer', 'Cheque'] as const;
 
 export function CustomerPaymentsPage() {
   const store = useStoreContext();
   const [showForm, setShowForm] = useState(false);
   const [search, setSearch] = useState('');
-  const [form, setForm] = useState({ date: new Date().toISOString().split('T')[0], customer_id: '', amount: '', payment_mode: 'Cash' as typeof PAYMENT_MODES[number], reference_number: '', notes: '' });
+  const [form, setForm] = useState({ date: new Date().toISOString().split('T')[0], customer_id: '', amount: '', payment_mode: 'Cash' as typeof PAYMENT_MODES[number], account_id: '', reference_number: '', notes: '' });
   const [error, setError] = useState('');
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -39,9 +39,51 @@ export function CustomerPaymentsPage() {
   const handleSave = () => {
     if (!form.customer_id) { setError('Customer is required.'); return; }
     if (!form.amount || parseFloat(form.amount) <= 0) { setError('Amount must be greater than 0.'); return; }
+    if (form.payment_mode !== 'Cash' && !form.account_id) { setError('Please select an account for this payment mode.'); return; }
     if (store.isDemoMode) { setError('Demo mode is read-only.'); return; }
-    store.addCustomerPayment({ customer_id: form.customer_id, date: form.date, amount: parseFloat(form.amount), payment_mode: form.payment_mode, reference_number: form.reference_number, notes: form.notes, created_by: store.currentUser?.full_name || '' });
-    setShowForm(false); setForm({ date: new Date().toISOString().split('T')[0], customer_id: '', amount: '', payment_mode: 'Cash', reference_number: '', notes: '' });
+    
+    // Determine the account to use
+    const accountId = form.payment_mode === 'Cash' 
+      ? store.cashBankAccounts.find(acc => acc.account_type === 'CASH')?.id 
+      : form.account_id;
+    
+    if (!accountId) { setError('Account not found.'); return; }
+    
+    // Get customer name for the transaction
+    const customer = store.customers.find(c => c.id === form.customer_id);
+    
+    // Create the customer payment
+    const payment = store.addCustomerPayment({ 
+      customer_id: form.customer_id, 
+      date: form.date, 
+      amount: parseFloat(form.amount), 
+      payment_mode: form.payment_mode, 
+      reference_number: form.reference_number, 
+      notes: form.notes, 
+      created_by: store.currentUser?.full_name || '' 
+    });
+    
+    // Create Cash & Bank transaction
+    store.addCashBankTransaction({
+      account_id: accountId,
+      date: form.date,
+      transaction_type: 'Payment In',
+      party_type: 'customer',
+      party_id: form.customer_id,
+      party_name: customer?.customer_name || '',
+      mode: form.payment_mode,
+      paid_amount: 0,
+      received_amount: parseFloat(form.amount),
+      balance_after: 0, // Will be calculated by the store
+      reference_no: form.reference_number,
+      notes: form.notes,
+      source_type: 'customer_payment',
+      source_id: payment.id,
+      created_by: store.currentUser?.full_name || ''
+    });
+    
+    setShowForm(false); 
+    setForm({ date: new Date().toISOString().split('T')[0], customer_id: '', amount: '', payment_mode: 'Cash', account_id: '', reference_number: '', notes: '' });
   };
 
   return (
@@ -127,9 +169,20 @@ export function CustomerPaymentsPage() {
               <div><label className="block text-sm font-medium text-slate-700 mb-1">Customer *</label><select value={form.customer_id} onChange={e => setForm({ ...form, customer_id: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"><option value="">Select customer</option>{store.customers.filter(c => c.is_active).map(c => <option key={c.id} value={c.id}>{c.customer_name} — Outstanding: {formatCurrency(store.getCustomerOutstanding(c.id))}</option>)}</select></div>
               <div><label className="block text-sm font-medium text-slate-700 mb-1">Amount (₹) *</label><input type="number" value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} placeholder="0.00" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" /></div>
               <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium text-slate-700 mb-1">Payment Mode</label><select value={form.payment_mode} onChange={e => setForm({ ...form, payment_mode: e.target.value as any })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">{PAYMENT_MODES.map(m => <option key={m} value={m}>{m}</option>)}</select></div>
+                <div><label className="block text-sm font-medium text-slate-700 mb-1">Payment Mode *</label><select value={form.payment_mode} onChange={e => setForm({ ...form, payment_mode: e.target.value as any, account_id: '' })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">{PAYMENT_MODES.map(m => <option key={m} value={m}>{m}</option>)}</select></div>
                 <div><label className="block text-sm font-medium text-slate-700 mb-1">Reference No.</label><input type="text" value={form.reference_number} onChange={e => setForm({ ...form, reference_number: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" /></div>
               </div>
+              {form.payment_mode !== 'Cash' && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Account *</label>
+                  <select value={form.account_id} onChange={e => setForm({ ...form, account_id: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                    <option value="">Select account</option>
+                    {store.cashBankAccounts.filter(acc => acc.is_active && acc.account_type === 'BANK').map(acc => (
+                      <option key={acc.id} value={acc.id}>{acc.account_name} — {formatCurrency(acc.balance)}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
               <div><label className="block text-sm font-medium text-slate-700 mb-1">Notes</label><textarea value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} rows={2} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" /></div>
             </div>
             <div className="p-5 border-t border-slate-200 flex gap-3">
@@ -147,7 +200,7 @@ export function SupplierPaymentsPage() {
   const store = useStoreContext();
   const [showForm, setShowForm] = useState(false);
   const [search, setSearch] = useState('');
-  const [form, setForm] = useState({ date: new Date().toISOString().split('T')[0], supplier_id: '', amount: '', payment_mode: 'Cash' as typeof PAYMENT_MODES[number], reference_number: '', notes: '' });
+  const [form, setForm] = useState({ date: new Date().toISOString().split('T')[0], supplier_id: '', amount: '', payment_mode: 'Cash' as typeof PAYMENT_MODES[number], account_id: '', reference_number: '', notes: '' });
   const [error, setError] = useState('');
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -178,9 +231,51 @@ export function SupplierPaymentsPage() {
   const handleSave = () => {
     if (!form.supplier_id) { setError('Supplier is required.'); return; }
     if (!form.amount || parseFloat(form.amount) <= 0) { setError('Amount must be greater than 0.'); return; }
+    if (form.payment_mode !== 'Cash' && !form.account_id) { setError('Please select an account for this payment mode.'); return; }
     if (store.isDemoMode) { setError('Demo mode is read-only.'); return; }
-    store.addSupplierPayment({ supplier_id: form.supplier_id, date: form.date, amount: parseFloat(form.amount), payment_mode: form.payment_mode, reference_number: form.reference_number, notes: form.notes, created_by: store.currentUser?.full_name || '' });
-    setShowForm(false); setForm({ date: new Date().toISOString().split('T')[0], supplier_id: '', amount: '', payment_mode: 'Cash', reference_number: '', notes: '' });
+    
+    // Determine the account to use
+    const accountId = form.payment_mode === 'Cash' 
+      ? store.cashBankAccounts.find(acc => acc.account_type === 'CASH')?.id 
+      : form.account_id;
+    
+    if (!accountId) { setError('Account not found.'); return; }
+    
+    // Get supplier name for the transaction
+    const supplier = store.suppliers.find(s => s.id === form.supplier_id);
+    
+    // Create the supplier payment
+    const payment = store.addSupplierPayment({ 
+      supplier_id: form.supplier_id, 
+      date: form.date, 
+      amount: parseFloat(form.amount), 
+      payment_mode: form.payment_mode, 
+      reference_number: form.reference_number, 
+      notes: form.notes, 
+      created_by: store.currentUser?.full_name || '' 
+    });
+    
+    // Create Cash & Bank transaction
+    store.addCashBankTransaction({
+      account_id: accountId,
+      date: form.date,
+      transaction_type: 'Payment Out',
+      party_type: 'supplier',
+      party_id: form.supplier_id,
+      party_name: supplier?.supplier_name || '',
+      mode: form.payment_mode,
+      paid_amount: parseFloat(form.amount),
+      received_amount: 0,
+      balance_after: 0, // Will be calculated by the store
+      reference_no: form.reference_number,
+      notes: form.notes,
+      source_type: 'supplier_payment',
+      source_id: payment.id,
+      created_by: store.currentUser?.full_name || ''
+    });
+    
+    setShowForm(false); 
+    setForm({ date: new Date().toISOString().split('T')[0], supplier_id: '', amount: '', payment_mode: 'Cash', account_id: '', reference_number: '', notes: '' });
   };
 
   return (
@@ -266,9 +361,20 @@ export function SupplierPaymentsPage() {
               <div><label className="block text-sm font-medium text-slate-700 mb-1">Supplier *</label><select value={form.supplier_id} onChange={e => setForm({ ...form, supplier_id: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"><option value="">Select supplier</option>{store.suppliers.filter(s => s.is_active).map(s => <option key={s.id} value={s.id}>{s.supplier_name} — Outstanding: {formatCurrency(store.getSupplierOutstanding(s.id))}</option>)}</select></div>
               <div><label className="block text-sm font-medium text-slate-700 mb-1">Amount (₹) *</label><input type="number" value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} placeholder="0.00" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" /></div>
               <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium text-slate-700 mb-1">Payment Mode</label><select value={form.payment_mode} onChange={e => setForm({ ...form, payment_mode: e.target.value as any })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">{PAYMENT_MODES.map(m => <option key={m} value={m}>{m}</option>)}</select></div>
+                <div><label className="block text-sm font-medium text-slate-700 mb-1">Payment Mode *</label><select value={form.payment_mode} onChange={e => setForm({ ...form, payment_mode: e.target.value as any, account_id: '' })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">{PAYMENT_MODES.map(m => <option key={m} value={m}>{m}</option>)}</select></div>
                 <div><label className="block text-sm font-medium text-slate-700 mb-1">Reference No.</label><input type="text" value={form.reference_number} onChange={e => setForm({ ...form, reference_number: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" /></div>
               </div>
+              {form.payment_mode !== 'Cash' && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Account *</label>
+                  <select value={form.account_id} onChange={e => setForm({ ...form, account_id: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                    <option value="">Select account</option>
+                    {store.cashBankAccounts.filter(acc => acc.is_active && acc.account_type === 'BANK').map(acc => (
+                      <option key={acc.id} value={acc.id}>{acc.account_name} — {formatCurrency(acc.balance)}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
               <div><label className="block text-sm font-medium text-slate-700 mb-1">Notes</label><textarea value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} rows={2} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" /></div>
             </div>
             <div className="p-5 border-t border-slate-200 flex gap-3">

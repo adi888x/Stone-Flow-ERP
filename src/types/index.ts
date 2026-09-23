@@ -4,7 +4,7 @@
 
 export type UserRole = 'ADMIN' | 'COUNTER_OPERATOR' | 'ACCOUNTANT' | 'MANAGER';
 export type TransactionState = 'FULFILLED' | 'CANCELLED';
-export type PaymentMode = 'Cash' | 'UPI' | 'Bank Transfer' | 'Card' | 'Other';
+export type PaymentMode = 'Cash' | 'UPI' | 'Bank Transfer' | 'Cheque';
 export type PaperSize = '58mm' | '80mm';
 
 export interface User {
