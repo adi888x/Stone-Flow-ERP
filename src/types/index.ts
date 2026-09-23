@@ -38,7 +38,6 @@ export interface Supplier {
   alternate_mobile?: string;
   address: string;
   contact_person?: string;
-  opening_balance?: number;
   notes?: string;
   is_active: boolean;
   created_at: string;

@@ -529,12 +529,10 @@ export function useStore() {
   }, [customers, sales, customerPayments]);
 
   const getSupplierOutstanding = useCallback((supplierId: string) => {
-    const supplier = suppliers.find(s => s.id === supplierId);
-    const openingBalance = supplier?.opening_balance || 0;
     const totalPurchases = purchases.filter(p => p.supplier_id === supplierId && p.transaction_state === 'FULFILLED').reduce((sum, p) => sum + p.total_amount, 0);
     const totalPayments = supplierPayments.filter(p => p.supplier_id === supplierId).reduce((sum, p) => sum + p.amount, 0);
-    return openingBalance + totalPurchases - totalPayments;
-  }, [suppliers, purchases, supplierPayments]);
+    return totalPurchases - totalPayments;
+  }, [purchases, supplierPayments]);
 
   const getApplicableRate = useCallback((customerId: string, materialId: string) => {
     const rate = customerRates.find(r =>
