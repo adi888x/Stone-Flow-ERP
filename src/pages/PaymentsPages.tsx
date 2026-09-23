@@ -61,7 +61,7 @@ export function CustomerPaymentsPage() {
       <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
         <div className="flex-1 overflow-auto">
         <table className="erp-table text-base">
-          <thead className="sticky top-0 bg-white z-10 shadow-sm"><tr><th>Date</th><th>Payment No.</th><th>Customer</th><th>Amount</th><th>Mode</th><th>Reference</th><th>Created By</th><th></th></tr></thead>
+          <thead className="sticky top-0 bg-white z-10 shadow-sm"><tr><th>Date</th><th>Payment ID</th><th>Customer</th><th>Amount</th><th>Mode</th><th>Reference</th><th>Created By</th><th></th></tr></thead>
           <tbody>
             {filtered.length === 0 ? <tr><td colSpan={8} className="text-center py-8 text-slate-500">No payments found</td></tr> :
               filtered.map(p => {
@@ -199,7 +199,7 @@ export function SupplierPaymentsPage() {
       <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col min-h-0">
         <div className="flex-1 overflow-auto">
         <table className="erp-table text-base">
-          <thead className="sticky top-0 bg-white z-10 shadow-sm"><tr><th>Date</th><th>Payment No.</th><th>Supplier</th><th>Amount</th><th>Mode</th><th>Reference</th><th>Created By</th><th></th></tr></thead>
+          <thead className="sticky top-0 bg-white z-10 shadow-sm"><tr><th>Date</th><th>Payment ID</th><th>Supplier</th><th>Amount</th><th>Mode</th><th>Reference</th><th>Created By</th><th></th></tr></thead>
           <tbody>
             {filtered.length === 0 ? <tr><td colSpan={8} className="text-center py-8 text-slate-500">No payments found</td></tr> :
               filtered.map(p => {
