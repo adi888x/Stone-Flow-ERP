@@ -154,7 +154,7 @@ export function SuppliersPage() {
                 <div><span className="text-slate-500">Mobile:</span> <span className="font-medium">{supplierDetail.mobile}</span></div>
                 <div><span className="text-slate-500">Contact:</span> <span className="font-medium">{supplierDetail.contact_person || '—'}</span></div>
                 <div><span className="text-slate-500">Address:</span> <span className="font-medium">{supplierDetail.address}</span></div>
-
+                <div><span className="text-slate-500">Opening Balance:</span> <span className="font-medium">{formatCurrency(supplierDetail.opening_balance || 0)}</span></div>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="p-3 bg-blue-50 rounded-lg text-center"><p className="text-lg font-bold text-blue-800">{supplierPurchases.length}</p><p className="text-xs text-blue-600">Purchases</p></div>

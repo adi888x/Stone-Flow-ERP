@@ -181,7 +181,7 @@ export function CustomersPage() {
                 <div><span className="text-slate-500">Mobile:</span> <span className="font-medium">{customerDetail.mobile}</span></div>
                 <div><span className="text-slate-500">Contact:</span> <span className="font-medium">{customerDetail.contact_person || '—'}</span></div>
                 <div><span className="text-slate-500">Address:</span> <span className="font-medium">{customerDetail.address}</span></div>
-
+                <div><span className="text-slate-500">Opening Balance:</span> <span className="font-medium">{formatCurrency(customerDetail.opening_balance || 0)}</span></div>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="p-3 bg-blue-50 rounded-lg text-center">
