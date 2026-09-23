@@ -44,38 +44,42 @@ export function DateRangeFilter({
 
   return (
     <div className="flex flex-wrap gap-3">
-      <div className="flex items-center gap-2">
-        <Calendar className="w-4 h-4 text-slate-500" />
-        <input
-          type="date"
-          value={fromDate}
-          onChange={(e) => onFromDateChange(e.target.value)}
-          className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          placeholder="From Date"
-        />
-      </div>
-      
-      <div className="flex items-center gap-2">
-        <Calendar className="w-4 h-4 text-slate-500" />
-        <input
-          type="date"
-          value={toDate}
-          onChange={(e) => onToDateChange(e.target.value)}
-          className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          placeholder="To Date"
-        />
-      </div>
-
       <select
         value={dateRange}
         onChange={(e) => handleDateRangeChange(e.target.value)}
         className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
       >
-        <option value="custom">Custom Range</option>
         <option value="today">Today</option>
         <option value="thisWeek">This Week</option>
         <option value="thisMonth">This Month</option>
+        <option value="custom">Custom Range</option>
       </select>
+
+      {dateRange === 'custom' && (
+        <>
+          <div className="flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-slate-500" />
+            <input
+              type="date"
+              value={fromDate}
+              onChange={(e) => onFromDateChange(e.target.value)}
+              className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="From Date"
+            />
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-slate-500" />
+            <input
+              type="date"
+              value={toDate}
+              onChange={(e) => onToDateChange(e.target.value)}
+              className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="To Date"
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 }
