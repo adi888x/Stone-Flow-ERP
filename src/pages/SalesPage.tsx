@@ -4,6 +4,7 @@ import { Plus, Search, Printer, Eye, X, MoreVertical } from 'lucide-react';
 import { SearchableSelect } from '../components/SearchableSelect';
 import { FilterBar } from '../components/FilterBar';
 import { ReportExportService } from '../services/ReportExportService';
+import { PrintReceipt } from '../components/PrintReceipt';
 
 function formatCurrency(n: number) { return '₹' + n.toLocaleString('en-IN'); }
 
@@ -231,6 +232,13 @@ export function SalesPage() {
 
   return (
     <div className="flex flex-col h-full">
+      {/* Print Container - Hidden on screen, visible only when printing */}
+      {previewSale && (
+        <div className="print-receipt-container">
+          <PrintReceipt type="sale" data={previewSale} store={store} />
+        </div>
+      )}
+
       {/* Header - Fixed */}
       <div className="flex-shrink-0 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -479,10 +487,9 @@ export function SalesPage() {
 }
 
 function ReceiptPreviewModal({ sale, store, onClose }: { sale: any; store: any; onClose: () => void }) {
-  const customer = store.customers.find((c: any) => c.id === sale.customer_id);
-  const vehicle = store.vehicles.find((v: any) => v.id === sale.vehicle_id);
-  const material = store.materials.find((m: any) => m.id === sale.material_id);
-  const settings = store.appSettings;
+  const handlePrint = () => {
+    window.print();
+  };
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
@@ -493,82 +500,11 @@ function ReceiptPreviewModal({ sale, store, onClose }: { sale: any; store: any; 
         </div>
 
         <div className="p-6 flex justify-center bg-slate-100">
-          <div className="receipt-80mm bg-white shadow-lg">
-            <div className="text-center border-b border-dashed border-slate-400 pb-2 mb-2">
-              <p className="font-bold text-sm">{settings.business_name}</p>
-              <p className="text-xs">{settings.business_address}</p>
-              <p className="text-xs">Ph: {settings.business_phone}</p>
-              <p className="font-bold text-xs mt-1">SALE SLIP</p>
-            </div>
-
-            <div className="space-y-1 text-xs">
-              <div className="flex justify-between">
-                <span>Slip No:</span>
-                <span className="font-mono font-bold">{sale.sale_slip_number || 'SAL-2026-XXXXXX'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Date:</span>
-                <span>{sale.date || new Date().toISOString().split('T')[0]}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Time:</span>
-                <span>{sale.time || new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}</span>
-              </div>
-            </div>
-
-            <div className="border-t border-dashed border-slate-400 my-2"></div>
-
-            <div className="space-y-1 text-xs">
-              <div className="flex justify-between">
-                <span>Customer:</span>
-                <span className="font-medium">{customer?.customer_name || 'N/A'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Vehicle:</span>
-                <span className="font-mono">{vehicle?.vehicle_number || 'N/A'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Driver:</span>
-                <span>{sale.driver_name || vehicle?.driver_name || 'N/A'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Material:</span>
-                <span>{material?.material_name || 'N/A'}</span>
-              </div>
-            </div>
-
-            <div className="border-t border-dashed border-slate-400 my-2"></div>
-
-            <div className="space-y-1 text-xs">
-              <div className="flex justify-between">
-                <span>Quantity:</span>
-                <span className="font-bold">{(sale.quantity_brass || 0).toFixed(2)} BRASS</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Rate:</span>
-                <span>{formatCurrency(sale.rate || 0)} / BRASS</span>
-              </div>
-            </div>
-
-            <div className="border-t-2 border-slate-800 my-2"></div>
-
-            <div className="flex justify-between text-sm font-bold">
-              <span>TOTAL:</span>
-              <span>{formatCurrency(sale.total_amount || 0)}</span>
-            </div>
-
-            <div className="border-t border-dashed border-slate-400 my-2"></div>
-
-            <div className="text-xs text-center space-y-0.5">
-              <p>Created By: {sale.created_by || store.currentUser?.full_name}</p>
-              <p className="mt-2">Thank you for your business!</p>
-              <p className="text-[10px] text-slate-500">— BALAJI WASH SAND —</p>
-            </div>
-          </div>
+          <PrintReceipt type="sale" data={sale} store={store} />
         </div>
 
         <div className="p-4 border-t border-slate-200 flex gap-3">
-          <button onClick={() => window.print()} className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm">
+          <button onClick={handlePrint} className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm">
             <Printer size={16} /> Print
           </button>
           <button onClick={onClose} className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg text-sm border border-slate-300">

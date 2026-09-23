@@ -196,3 +196,88 @@ input:focus, select:focus, textarea:focus, button:focus-visible {
   animation: shimmer 1.5s ease-in-out infinite;
   border-radius: 0.5rem;
 }
+
+/* Print Styles - Thermal Receipt */
+@media print {
+  /* Hide everything */
+  body * {
+    visibility: hidden;
+  }
+  
+  /* Show only print receipt container */
+  .print-receipt-container,
+  .print-receipt-container * {
+    visibility: visible;
+  }
+  
+  /* Position receipt at top-left */
+  .print-receipt-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80mm;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Remove page margins */
+  @page {
+    size: 80mm auto;
+    margin: 0;
+  }
+  
+  /* Receipt styling for print */
+  .receipt-80mm {
+    width: 80mm;
+    padding: 3mm;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    line-height: 1.4;
+    color: #000;
+    background: #fff;
+  }
+  
+  /* Ensure no page breaks inside receipt */
+  .receipt-80mm * {
+    page-break-inside: avoid;
+  }
+}
+
+/* Screen styles for print receipt container (hidden on screen by default) */
+.print-receipt-container {
+  position: fixed;
+  left: -9999px;
+  top: -9999px;
+}
+
+/* Show receipt in preview modal on screen */
+.fixed .print-receipt-container,
+.modal .print-receipt-container {
+  position: static;
+  left: auto;
+  top: auto;
+}
+
+@media screen {
+  .print-receipt-container {
+    display: none;
+  }
+  
+  /* Override for preview modals */
+  .fixed.inset-0 .print-receipt-container {
+    display: block;
+    position: static;
+  }
+}
+
+/* Receipt styling for screen preview */
+.receipt-80mm {
+  width: 80mm;
+  padding: 3mm;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #000;
+  background: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
