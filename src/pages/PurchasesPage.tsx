@@ -28,6 +28,7 @@ export function PurchasesPage() {
   const [notes, setNotes] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [supplierSearch, setSupplierSearch] = useState('');
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [menuPosition, setMenuPosition] = useState<'top' | 'bottom'>('bottom');
   const menuRef = useRef<HTMLDivElement>(null);
@@ -94,6 +95,7 @@ export function PurchasesPage() {
     setSuccess('Purchase slip created successfully!');
     setFormDate(new Date().toISOString().split('T')[0]);
     setSupplierId(''); setVehicleId(''); setMaterialId(''); setQuantity(''); setRate(''); setNotes('');
+    setSupplierSearch('');
   };
 
   return (
@@ -220,9 +222,16 @@ export function PurchasesPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Supplier *</label>
+                <input
+                  type="text"
+                  placeholder="Search supplier..."
+                  value={supplierSearch}
+                  onChange={e => setSupplierSearch(e.target.value)}
+                  className="w-full px-3 py-2 mb-2 border border-slate-300 rounded-lg text-sm"
+                />
                 <select value={supplierId} onChange={e => { setSupplierId(e.target.value); setVehicleId(''); }} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
                   <option value="">Select supplier</option>
-                  {store.suppliers.filter(s => s.is_active).map(s => <option key={s.id} value={s.id}>{s.supplier_name}</option>)}
+                  {store.suppliers.filter(s => s.is_active && s.supplier_name.toLowerCase().includes(supplierSearch.toLowerCase())).map(s => <option key={s.id} value={s.id}>{s.supplier_name}</option>)}
                 </select>
               </div>
               <div>

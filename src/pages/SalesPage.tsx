@@ -54,6 +54,7 @@ export function SalesPage() {
   const [notes, setNotes] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [customerSearch, setCustomerSearch] = useState('');
 
   const getDateRange = () => {
     const today = new Date();
@@ -169,6 +170,7 @@ export function SalesPage() {
   const resetForm = () => {
     setFormDate(new Date().toISOString().split('T')[0]);
     setCustomerId(''); setVehicleId(''); setMaterialId(''); setQuantity(''); setRate(''); setNotes(''); setError('');
+    setCustomerSearch('');
   };
 
   const handleCancelSale = (saleId: string) => {
@@ -337,9 +339,16 @@ export function SalesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Customer *</label>
+                <input
+                  type="text"
+                  placeholder="Search customer..."
+                  value={customerSearch}
+                  onChange={e => setCustomerSearch(e.target.value)}
+                  className="w-full px-3 py-2 mb-2 border border-slate-300 rounded-lg text-sm"
+                />
                 <select value={customerId} onChange={e => handleCustomerChange(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
                   <option value="">Select customer</option>
-                  {store.customers.filter(c => c.is_active).map(c => <option key={c.id} value={c.id}>{c.customer_name}</option>)}
+                  {store.customers.filter(c => c.is_active && c.customer_name.toLowerCase().includes(customerSearch.toLowerCase())).map(c => <option key={c.id} value={c.id}>{c.customer_name}</option>)}
                 </select>
               </div>
 
